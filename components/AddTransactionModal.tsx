@@ -11,6 +11,7 @@ export const AddTransactionModal: React.FC = () => {
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState(categories[0].id);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -25,6 +26,7 @@ export const AddTransactionModal: React.FC = () => {
       category_id: categoryId,
       date: new Date(date).toISOString(),
       type,
+      title,
       description
     });
     setSaving(false);
@@ -100,6 +102,7 @@ export const AddTransactionModal: React.FC = () => {
                     type="date" 
                     value={date} 
                     onChange={e => setDate(e.target.value)}
+                    max={new Date().toISOString().split('T')[0]}
                     className="w-full bg-transparent text-white focus:outline-none text-[13px] font-semibold font-mono" 
                 />
             </div>
@@ -107,6 +110,17 @@ export const AddTransactionModal: React.FC = () => {
                 <Icon name="camera" size={16} className="text-[#0A84FF]"/>
                 <span className="text-[13px] font-semibold text-white/90">Скан чека</span>
             </button>
+          </div>
+
+          {/* Title */}
+          <div className="bg-black/20 rounded-[20px] px-4 py-3 border border-white/5">
+             <input 
+              type="text" 
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Название..."
+              className="w-full bg-transparent border-none text-white placeholder-white/20 focus:outline-none text-[14px] font-medium"
+            />
           </div>
 
           {/* Description */}

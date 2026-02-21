@@ -96,7 +96,7 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                 >
                     <div className="flex items-center justify-between h-[84px] px-6">
                         <NavItem path="/" icon="dashboard" label="Главная" />
-                        <NavItem path="/transactions" icon="list" label="Счета" />
+                        <NavItem path="/transactions" icon="list" label="История" />
                         <NavItem path="/analytics" icon="chart" label="Отчеты" />
                         <NavItem path="/settings" icon="settings" label="Меню" />
                     </div>

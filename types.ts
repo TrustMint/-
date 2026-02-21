@@ -15,6 +15,7 @@ export interface Transaction {
   currency: string;
   category_id: string;
   date: string; // ISO string
+  title?: string;
   description?: string;
   type: TransactionType;
   user_id: string;

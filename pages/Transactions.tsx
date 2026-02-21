@@ -17,7 +17,7 @@ const SwipeableTransactionItem: React.FC<{
 
     // Сброс состояния при клике в другом месте (можно расширить через контекст, но пока локально)
     useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
+        const handleClickOutside = (e: Event) => {
             if (itemRef.current && !itemRef.current.contains(e.target as Node)) {
                 setOffsetX(0);
             }
@@ -97,15 +97,17 @@ const SwipeableTransactionItem: React.FC<{
                         </div>
                         
                         <div>
-                            <p className="font-semibold text-[15px] text-white leading-snug">{cat?.name}</p>
-                            <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
-                                {t.description || (t.type === 'expense' ? 'Расход' : 'Доход')}
-                            </p>
+                            <p className="font-semibold text-[15px] text-white leading-snug">{(t as any).title || cat?.name}</p>
+                            {t.description && (
+                                <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
+                                    {t.description}
+                                </p>
+                            )}
                         </div>
                     </div>
 
                     {/* Right: Amount */}
-                    <div className={`font-bold text-[16px] tracking-tight ${t.type === 'income' ? 'text-[#30D158]' : 'text-white'}`}>
+                    <div className={`font-bold text-[16px] tracking-tight ${t.type === 'income' ? 'text-[#30D158]' : 'text-[#FF453A]'}`}>
                         {t.type === 'income' ? '+' : '−'}{t.amount.toLocaleString('ru-RU')} ₽
                     </div>
                 </div>
@@ -170,7 +172,7 @@ export const Transactions: React.FC = () => {
       <div className="flex justify-between items-center z-20 sticky top-0 bg-black/90 backdrop-blur-xl py-4 -mx-4 px-4 md:mx-0 md:px-0">
         {/* Styled Title as requested (matching date headers) */}
         <h1 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest pl-1">
-            Счета
+            История
         </h1>
         
         <div className="flex gap-3 relative">

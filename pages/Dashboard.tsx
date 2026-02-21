@@ -140,13 +140,15 @@ export const Dashboard: React.FC = () => {
                                 <Icon name={cat?.icon || 'dollar'} size={20} color={cat?.color} />
                             </div>
                             <div>
-                                <p className="font-semibold text-[15px] text-white leading-snug">{cat?.name}</p>
-                                <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
-                                    {t.description || (t.type === 'expense' ? 'Расход' : 'Доход')}
-                                </p>
+                                <p className="font-semibold text-[15px] text-white leading-snug">{(t as any).title || cat?.name}</p>
+                                {t.description && (
+                                    <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
+                                        {t.description}
+                                    </p>
+                                )}
                             </div>
                         </div>
-                        <div className={`font-bold text-[16px] tracking-tight ${t.type === 'income' ? 'text-[#30D158]' : 'text-white'}`}>
+                        <div className={`font-bold text-[16px] tracking-tight ${t.type === 'income' ? 'text-[#30D158]' : 'text-[#FF453A]'}`}>
                             {t.type === 'income' ? '+' : '−'}{Math.abs(t.amount).toLocaleString('ru-RU')} ₽
                         </div>
                     </div>

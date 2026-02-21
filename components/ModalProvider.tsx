@@ -135,7 +135,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+  const handleTouchEnd = useCallback(() => {
     if (!isDraggingRef.current || !contentRef.current) return;
     isDraggingRef.current = false;
 
