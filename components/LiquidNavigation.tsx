@@ -85,13 +85,17 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
             </div>
 
             {/* Navigation Panel */}
-            <div className="fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
+            <div 
+                className="fixed left-0 right-0 z-[100] pointer-events-none"
+                style={{ bottom: 'env(safe-area-inset-bottom)' }}
+            >
                 <div
                     className="w-full pointer-events-auto"
                     style={{
                         ...glassStyle,
-                        paddingBottom: 'env(safe-area-inset-bottom)',
-                        height: 'calc(84px + env(safe-area-inset-bottom))'
+                        height: '84px',
+                        borderBottom: '0.5px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '24px' 
                     }}
                 >
                     <div className="flex items-center justify-between h-[84px] px-6">

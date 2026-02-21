@@ -13,13 +13,43 @@
   --expense: #FF453A;
 }
 
+/* Global Scrollbar Hiding */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
+}
+
 /* NATIVE APP VIEWPORT FIXES */
 html, body, #root {
   height: 100%;
   width: 100%;
   overflow: hidden; /* Keep this to allow Layout to handle scrolling */
-  /* Removed position: fixed to fix status bar gap */
   background-color: var(--background);
+  /* Ensure content covers the whole screen including safe areas */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); 
+  box-sizing: border-box;
+}
+
+/* Reset padding for root to handle it in specific layouts if needed, 
+   but usually for full immersive apps we want the background to bleed 
+   and content to be safe. 
+   However, the user asked to "remove black bar at top", which implies 
+   we should let the background extend into the status bar.
+*/
+html, body {
+  padding: 0; /* Let background bleed */
+}
+
+#root {
+  /* Apply safe area padding to the root container or specific pages */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 body {
@@ -33,14 +63,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Custom Scrollbar Handling */
-.custom-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.custom-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+/* Custom Scrollbar Handling - REMOVED (Global applied) */
 
 /* Inputs should allow selection */
 input, textarea {
