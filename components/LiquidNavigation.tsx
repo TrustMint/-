@@ -20,15 +20,15 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
     };
 
     const handleNavigate = (path: string) => {
+        // Если мы уже на этой вкладке, скроллим вверх
         if (currentPath === path) {
              const scrollContainer = document.getElementById('main-scroll-container');
-             if (scrollContainer) {
+             if (scrollContainer && scrollContainer.scrollTop > 0) {
                  scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
-             } else {
-                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                 return;
              }
-             return;
         }
+
         triggerHaptic();
         navigate(path);
     };
@@ -42,6 +42,7 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                 className="flex-1 flex flex-col items-center justify-center h-full relative group pt-2 pb-1"
                 style={{ WebkitTapHighlightColor: 'transparent' }}
             >
+                {/* Icon Container */}
                 <div 
                     className={`transition-all duration-300 ease-out mb-1 ${
                         isActive ? 'text-[#0A84FF] -translate-y-0.5' : 'text-white/40 translate-y-0.5'
@@ -50,6 +51,7 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                     <Icon name={icon} size={24} />
                 </div>
                 
+                {/* Label - Always Visible */}
                 <span 
                     className={`text-[10px] font-bold tracking-wide transition-colors duration-300 ${
                         isActive ? 'text-[#0A84FF]' : 'text-white/40'
@@ -61,51 +63,44 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
         )
     }
 
-    const glassStyle: React.CSSProperties = {
-        backgroundColor: 'rgba(20, 20, 20, 0.85)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderTop: '0.5px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 -10px 40px rgba(0,0,0,0.6)',
-    };
-
     return (
-        <div className="md:hidden">
-            {/* Navigation Panel */}
-            <div 
-                className="fixed left-0 right-0 z-[100] pointer-events-none"
-                style={{ bottom: 'env(safe-area-inset-bottom)' }}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
+            {/* The Panel Container - MATCHING REQUESTED STYLE EXACTLY */}
+            <div
+                className="w-full pointer-events-auto"
+                style={{
+                    backgroundColor: 'rgba(20, 20, 20, 0.4)',
+                    backdropFilter: 'blur(5px)',
+                    WebkitBackdropFilter: 'blur(5px)',
+                    border: '0.5px solid rgba(255, 255, 255, 0.1)',
+                    borderBottom: 'none', // Remove bottom border since it touches the edge
+                    borderTopLeftRadius: '32px',
+                    borderTopRightRadius: '32px',
+                    boxShadow: '0 -10px 40px rgba(0,0,0,0.6)', 
+                    paddingBottom: 'env(safe-area-inset-bottom)',
+                    height: 'calc(84px + env(safe-area-inset-bottom))'
+                }}
             >
-                <div
-                    className="w-full pointer-events-auto"
-                    style={{
-                        ...glassStyle,
-                        height: '84px',
-                        borderBottom: '0.5px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '24px' 
-                    }}
-                >
-                    <div className="flex items-center justify-between h-[84px] px-2">
-                        <NavItem path="/" icon="dashboard" label="Главная" />
-                        <NavItem path="/transactions" icon="list" label="История" />
-                        
-                        {/* Central Add Button - Glass Style */}
-                        <div className="relative -top-6">
-                            <button
-                                onClick={() => { triggerHaptic(); onOpenAdd(); }}
-                                className="w-16 h-16 rounded-full flex items-center justify-center active:scale-90 transition-transform duration-200 backdrop-blur-xl border border-white/10 shadow-2xl"
-                                style={{
-                                    backgroundColor: 'rgba(30, 30, 30, 0.6)',
-                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
-                                }}
-                            >
-                                <Icon name="plus" size={32} className="text-white/60" strokeWidth={2} />
-                            </button>
+                <div className="flex items-center justify-around h-[84px] px-2">
+                    <NavItem path="/" icon="dashboard" label="Главная" />
+                    <NavItem path="/transactions" icon="list" label="История" />
+                    
+                    {/* Central Add Button - Integrated as Nav Item style but triggers modal */}
+                    <button
+                        onClick={() => { triggerHaptic(); onOpenAdd(); }}
+                        className="flex-1 flex flex-col items-center justify-center h-full relative group pt-2 pb-1"
+                        style={{ WebkitTapHighlightColor: 'transparent' }}
+                    >
+                        <div className="mb-1 text-white/40 translate-y-0.5 transition-all duration-300 ease-out active:scale-90 active:text-white">
+                            <Icon name="plus" size={28} strokeWidth={2.5} />
                         </div>
+                        <span className="text-[10px] font-bold tracking-wide text-white/40 transition-colors duration-300">
+                            Новая
+                        </span>
+                    </button>
 
-                        <NavItem path="/analytics" icon="chart" label="Отчеты" />
-                        <NavItem path="/settings" icon="settings" label="Меню" />
-                    </div>
+                    <NavItem path="/analytics" icon="chart" label="Отчеты" />
+                    <NavItem path="/settings" icon="settings" label="Меню" />
                 </div>
             </div>
         </div>

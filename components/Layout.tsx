@@ -45,18 +45,20 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   // --- SWIPE BACK INTEGRATION ---
-  // Enable swipe back only if we are NOT on the root dashboard (or customize as needed)
-  // For a tab app, usually you don't swipe back between tabs, but if the user requested it:
-  // We'll enable it for all pages except maybe the very first one if it's the entry point.
-  // But let's just enable it generally. If on Dashboard, maybe it shouldn't swipe back to nothing.
-  // Let's assume history stack exists.
+  // Disable swipe back on root paths (tabs), enable only for inner pages
+  const rootPaths = ['/', '/transactions', '/analytics', '/categories', '/settings'];
+  const isRootPath = rootPaths.includes(location.pathname);
+
   const { dragHandlers, pushedStyle, isDragging, dragProgress } = useSwipeBack({
       onSwipeBack: () => navigate(-1),
-      enabled: true // Always enabled as per request "apply this hook for our application"
+      enabled: !isRootPath // Disable on root paths
   });
 
   return (
-    <div className="h-full w-full bg-black text-white flex flex-col md:flex-row overflow-hidden relative selection:bg-[#0A84FF]/30">
+    <div 
+        className="relative w-full bg-black text-white flex flex-col md:flex-row overflow-hidden selection:bg-[#0A84FF]/30 font-sans" 
+        style={{ height: '100vh', boxSizing: 'border-box' }}
+    >
       
       {/* --- DESKTOP/TABLET SIDEBAR (Left) --- */}
       <aside className="hidden md:flex flex-col w-20 lg:w-64 fixed h-full left-0 top-0 bg-[#1C1C1E]/40 backdrop-blur-2xl border-r border-white/5 z-40 pt-8 px-4 transition-all duration-300">
@@ -85,17 +87,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </aside>
 
       {/* --- MAIN CONTENT (SCROLLABLE AREA) --- */}
-      {/* 
-          Applied swipe back handlers to this container.
-          Also adjusted padding as requested: 
-          - Removed top padding (pt-2) to let content flow naturally? 
-            User said "remove headers... content in one container". 
-            I will keep pt-2 for status bar spacing if needed, or remove it if user wants full bleed.
-            User said "remove extra margins from bottom... identical indentation about half a centimeter".
-            0.5cm ~ 20px.
-            So padding-bottom should be nav_height + safe_area + 20px.
-            Nav height is 84px.
-      */}
       <main 
         className="flex-1 w-full md:ml-20 lg:ml-64 h-full relative overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-y-contain bg-black"
         id="main-scroll-container"
@@ -107,6 +98,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       >
         {isDragging && <SwipeBackShadow progress={dragProgress} />}
         
+        {/* Content Wrapper with padding for bottom nav */}
         <div className="max-w-[1200px] mx-auto px-4 pt-2 pb-[calc(84px+env(safe-area-inset-bottom)+20px)] md:p-8 md:pb-8 min-h-full">
           {children}
         </div>
