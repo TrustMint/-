@@ -116,8 +116,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       {/* --- MOBILE LIQUID NAVIGATION (Bottom) --- */}
-      {/* Show only on root paths */}
-      {isRootPath && <LiquidNavigation onOpenAdd={handleOpenAdd} />}
+      <LiquidNavigation onOpenAdd={handleOpenAdd} />
     </div>
   );
 };

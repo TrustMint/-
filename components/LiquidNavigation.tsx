@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from './ui/Icons';
 
@@ -10,13 +10,6 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
     const location = useLocation();
     const navigate = useNavigate();
     const currentPath = location.pathname;
-    
-    // Drag State
-    const navRef = useRef<HTMLDivElement>(null);
-    const startY = useRef<number>(0);
-    const currentY = useRef<number>(0);
-    const isDragging = useRef<boolean>(false);
-    const [offsetY, setOffsetY] = useState(0);
 
     const triggerHaptic = () => {
         try {
@@ -27,6 +20,7 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
     };
 
     const handleNavigate = (path: string) => {
+        // Если мы уже на этой вкладке, скроллим вверх
         if (currentPath === path) {
              const scrollContainer = document.getElementById('main-scroll-container');
              if (scrollContainer && scrollContainer.scrollTop > 0) {
@@ -34,48 +28,9 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                  return;
              }
         }
+
         triggerHaptic();
         navigate(path);
-    };
-
-    // --- DRAG HANDLERS ---
-    const handleTouchStart = (e: React.TouchEvent) => {
-        startY.current = e.touches[0].clientY;
-        currentY.current = e.touches[0].clientY;
-        isDragging.current = true;
-        
-        if (navRef.current) {
-            navRef.current.style.transition = 'none';
-        }
-    };
-
-    const handleTouchMove = (e: React.TouchEvent) => {
-        if (!isDragging.current) return;
-        const touchY = e.touches[0].clientY;
-        const deltaY = touchY - startY.current;
-
-        // Allow pulling UP (negative delta)
-        if (deltaY < 0) {
-            // Add resistance
-            const resistance = 0.4;
-            setOffsetY(deltaY * resistance);
-        }
-    };
-
-    const handleTouchEnd = () => {
-        isDragging.current = false;
-        
-        // Threshold to trigger modal (High effort: > 120px visual, which is ~300px actual drag with resistance)
-        if (offsetY < -80) {
-            triggerHaptic();
-            onOpenAdd();
-        }
-
-        // Reset
-        setOffsetY(0);
-        if (navRef.current) {
-            navRef.current.style.transition = 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)';
-        }
     };
 
     const NavItem = ({ path, icon, label }: { path: string, icon: string, label: string }) => {
@@ -110,32 +65,39 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
-            {/* The Panel Container */}
+            
+            {/* Floating Add Button - Positioned above nav */}
+            <div className="absolute bottom-[calc(84px+env(safe-area-inset-bottom)+16px)] right-4 pointer-events-auto z-[101]">
+                <button
+                    onClick={() => { triggerHaptic(); onOpenAdd(); }}
+                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.5)] active:scale-90 transition-transform duration-300 border border-white/20 backdrop-blur-xl"
+                    style={{
+                        background: 'rgba(20, 20, 20, 0.6)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                    }}
+                >
+                    <Icon name="plus" size={28} color="#0A84FF" strokeWidth={2.5} />
+                </button>
+            </div>
+
+            {/* The Panel Container - MATCHING REQUESTED STYLE EXACTLY */}
             <div
-                ref={navRef}
-                className="w-full pointer-events-auto relative"
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
+                className="w-full pointer-events-auto"
                 style={{
-                    backgroundColor: 'rgba(20, 20, 20, 0.85)', // Slightly more opaque for drag feel
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
+                    backgroundColor: 'rgba(20, 20, 20, 0.4)',
+                    backdropFilter: 'blur(5px)',
+                    WebkitBackdropFilter: 'blur(5px)',
                     border: '0.5px solid rgba(255, 255, 255, 0.1)',
-                    borderBottom: 'none',
+                    borderBottom: 'none', // Remove bottom border since it touches the edge
                     borderTopLeftRadius: '32px',
                     borderTopRightRadius: '32px',
                     boxShadow: '0 -10px 40px rgba(0,0,0,0.6)', 
                     paddingBottom: 'env(safe-area-inset-bottom)',
-                    height: 'calc(84px + env(safe-area-inset-bottom))',
-                    transform: `translateY(${offsetY}px)`,
-                    willChange: 'transform'
+                    height: 'calc(84px + env(safe-area-inset-bottom))'
                 }}
             >
-                {/* iOS Handle Bar */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 bg-white/20 rounded-full" />
-
-                <div className="flex items-center justify-around h-[84px] px-2 pt-2">
+                <div className="flex items-center justify-around h-[84px] px-6">
                     <NavItem path="/" icon="dashboard" label="Главная" />
                     <NavItem path="/transactions" icon="list" label="История" />
                     <NavItem path="/analytics" icon="chart" label="Отчеты" />

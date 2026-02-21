@@ -147,8 +147,8 @@ export const Dashboard: React.FC = () => {
           )}
       </div>
 
-      {/* Chart Section - Grey Block */}
-      <div className="bg-[#1C1C1E] rounded-[24px] p-5 h-[240px] flex flex-col">
+      {/* Chart Section - Reverted to Cleaner Look */}
+      <div className="h-[240px] flex flex-col">
          <h3 className="text-[15px] font-bold text-secondary mb-4 ml-1">Динамика</h3>
          <div className="flex-1 w-full min-h-0 relative -ml-2">
             <ResponsiveContainer width="100%" height="100%">
