@@ -98,14 +98,26 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       >
         {isDragging && <SwipeBackShadow progress={dragProgress} />}
         
+        {/* Floating Back Button for Inner Pages */}
+        {!isRootPath && (
+            <button 
+                onClick={() => navigate(-1)}
+                className="fixed top-4 left-4 z-50 w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 flex items-center justify-center active:scale-90 transition-transform shadow-lg"
+                style={{ paddingTop: 'env(safe-area-inset-top)' }}
+            >
+                <Icon name="arrow-left" size={20} className="text-white" />
+            </button>
+        )}
+
         {/* Content Wrapper with padding for bottom nav */}
-        <div className="max-w-[1200px] mx-auto px-4 pt-2 pb-[calc(84px+env(safe-area-inset-bottom)+20px)] md:p-8 md:pb-8 min-h-full">
+        <div className="max-w-[1200px] mx-auto px-4 pt-2 pb-[calc(84px+env(safe-area-inset-bottom)+40px)] md:p-8 md:pb-8 min-h-full">
           {children}
         </div>
       </main>
 
       {/* --- MOBILE LIQUID NAVIGATION (Bottom) --- */}
-      <LiquidNavigation onOpenAdd={handleOpenAdd} />
+      {/* Show only on root paths */}
+      {isRootPath && <LiquidNavigation onOpenAdd={handleOpenAdd} />}
     </div>
   );
 };

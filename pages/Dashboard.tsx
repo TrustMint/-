@@ -54,7 +54,7 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6 pt-2 animate-fade-in">
       {/* Header: Date Only - Integrated into flow */}
       <div className="px-1">
-        <p className="text-secondary/60 text-[13px] font-semibold uppercase tracking-widest">
+        <p className="text-secondary/60 text-[26px] font-bold uppercase tracking-widest leading-none">
           {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>

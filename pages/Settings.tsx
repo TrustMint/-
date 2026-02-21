@@ -53,8 +53,10 @@ export const Settings: React.FC = () => {
 
       <div className="space-y-6">
           
+          <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none pt-2">Настройки</h1>
+
           {/* AVATAR HEADER - CLEAN (No Text) */}
-          <div className="flex flex-col items-center pt-8 pb-4 relative">
+          <div className="flex flex-col items-center pt-4 pb-4 relative">
               <div 
                   className="relative mb-4 group cursor-pointer active:scale-95 transition-transform"
                   onClick={handleAvatarClick}

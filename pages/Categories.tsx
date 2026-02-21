@@ -12,7 +12,7 @@ export const Categories: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in relative">
       <div className="flex justify-between items-center px-1">
-        <h1 className="text-3xl font-bold">Категории</h1>
+        <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none">Категории</h1>
         <button 
             onClick={() => showModal(<AddCategoryModal />)}
             className="w-10 h-10 rounded-full bg-[#0A84FF] flex items-center justify-center shadow-lg active:scale-95 transition-transform"

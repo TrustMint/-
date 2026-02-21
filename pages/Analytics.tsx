@@ -101,7 +101,7 @@ export const Analytics: React.FC = () => {
     <div className="space-y-6 animate-fade-in pt-2">
       {/* Header */}
       <div className="flex justify-between items-center px-1">
-        <h1 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest pl-1">Отчеты</h1>
+        <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none">Отчеты</h1>
         <div className="flex bg-[#1C1C1E] p-1 rounded-full">
             {['week', 'month', 'year'].map(p => (
                 <button 
@@ -148,33 +148,45 @@ export const Analytics: React.FC = () => {
          </div>
          
          {/* 3D-like Pie Chart */}
-         <div className="w-full h-[300px] relative flex items-center justify-center">
+         <div className="w-full h-[320px] relative flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
+                    <defs>
+                        {pieData.map((entry, index) => (
+                            <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor={entry.color} stopOpacity={1}/>
+                                <stop offset="100%" stopColor={entry.color} stopOpacity={0.6}/>
+                            </linearGradient>
+                        ))}
+                        <filter id="shadow-3d" x="-50%" y="-50%" width="200%" height="200%">
+                            <feDropShadow dx="0" dy="10" stdDeviation="10" floodColor="#000" floodOpacity="0.5"/>
+                        </filter>
+                    </defs>
                     <Pie
                         activeIndex={activeIndex}
                         activeShape={renderActiveShape}
                         data={pieData}
                         cx="50%"
                         cy="50%"
-                        innerRadius={60}
-                        outerRadius={90}
-                        paddingAngle={4}
+                        innerRadius={80} // Increased for donut look
+                        outerRadius={110} // Thicker ring
+                        paddingAngle={6}
                         dataKey="value"
                         onClick={onPieEnter}
                         onMouseEnter={onPieEnter}
                         stroke="none"
+                        filter="url(#shadow-3d)"
                     >
                         {pieData.map((entry, index) => (
                             <Cell 
                                 key={`cell-${index}`} 
-                                fill={entry.color} 
-                                stroke="rgba(0,0,0,0.2)"
+                                fill={`url(#gradient-${index})`}
+                                stroke="rgba(255,255,255,0.05)"
                                 strokeWidth={1}
                                 style={{ 
-                                    filter: `drop-shadow(0px 10px 10px ${entry.color}40)`, // Enhanced 3D glow/shadow
                                     transformOrigin: 'center center',
-                                    transition: 'all 0.3s ease'
+                                    transition: 'all 0.3s ease',
+                                    outline: 'none'
                                 }}
                             />
                         ))}
@@ -182,9 +194,11 @@ export const Analytics: React.FC = () => {
                 </PieChart>
             </ResponsiveContainer>
             
-            {/* Inner 3D Depth Effect Ring */}
-             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-[120px] h-[120px] rounded-full border-[8px] border-[#2C2C2E] shadow-[inset_0_4px_10px_rgba(0,0,0,0.5)] opacity-50"></div>
+            {/* Center Info (Total) */}
+             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-secondary/40 text-xs font-bold uppercase tracking-widest mb-1">Всего</span>
+                <span className="text-2xl font-bold text-white">{expense.toLocaleString()}</span>
+                <span className="text-sm text-secondary/40 font-medium">RUB</span>
             </div>
          </div>
 

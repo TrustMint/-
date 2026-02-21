@@ -80,7 +80,7 @@ const SwipeableTransactionItem: React.FC<{
 
             {/* Foreground Content */}
             <div 
-                className="relative z-10 bg-[#1C1C1E] rounded-[24px] overflow-hidden transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+                className="relative z-10 bg-[#1C1C1E] rounded-[24px] overflow-hidden transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] touch-pan-y"
                 style={{ transform: `translateX(${offsetX}px)` }}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -171,7 +171,7 @@ export const Transactions: React.FC = () => {
       {/* Header - Integrated into flow (not sticky) */}
       <div className="flex justify-between items-center py-4 px-1">
         {/* Styled Title as requested (matching date headers) */}
-        <h1 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest pl-1">
+        <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none">
             История
         </h1>
         
