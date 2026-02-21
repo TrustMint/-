@@ -1,0 +1,5 @@
+{
+  "name": "FinTrack PWA",
+  "description": "A production-grade, offline-first personal finance tracker with iOS-style glassmorphism UI.",
+  "requestFramePermissions": []
+}

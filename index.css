@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #000000;
+  --surface: #1C1C1E;
+  --surface-glass: rgba(28, 28, 30, 0.7);
+  --primary: #FFFFFF;
+  --secondary: #EBEBF5;
+  --accent: #0A84FF;
+  --income: #30D158;
+  --expense: #FF453A;
+}
+
+/* NATIVE APP VIEWPORT FIXES */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Keep this to allow Layout to handle scrolling */
+  /* Removed position: fixed to fix status bar gap */
+  background-color: var(--background);
+}
+
+body {
+  color: var(--primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Disable text selection for app-like feel */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom Scrollbar Handling */
+.custom-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Inputs should allow selection */
+input, textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}

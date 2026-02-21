@@ -1,0 +1,180 @@
+import React, { useRef, useState } from 'react';
+import { useStore } from '../store';
+import { Icon } from '../components/ui/Icons';
+import { ProfileBlock, MenuRow, ProfileActionButton } from '../components/ui/SettingsUI';
+import { useNavigate } from 'react-router-dom';
+
+export const Settings: React.FC = () => {
+  const { user, signOut } = useStore();
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Placeholder for avatar logic
+  const handleAvatarClick = () => {
+      fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      
+      setIsUploading(true);
+      // Simulate upload delay
+      setTimeout(() => {
+          setIsUploading(false);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+          alert('Фото профиля обновлено (демо)');
+      }, 1500);
+  };
+
+  // Generate avatar initial or placeholder image
+  const avatarUrl = user?.full_name 
+    ? `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name)}&background=0A84FF&color=fff&size=256` 
+    : 'https://ui-avatars.com/api/?name=User&background=random&size=256';
+
+  return (
+    <div className="space-y-6 pb-24 md:pb-0 animate-fade-in relative">
+      <input 
+          type="file" 
+          ref={fileInputRef} 
+          onChange={handleFileChange} 
+          accept="image/*" 
+          className="hidden" 
+      />
+
+      {/* Decorative background blur */}
+      <div className="fixed inset-0 pointer-events-none -z-10">
+           <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[80%] h-[40%] bg-[#0A84FF]/20 blur-[100px] rounded-full opacity-60"></div>
+      </div>
+
+      <div className="space-y-6">
+          
+          {/* AVATAR HEADER - CLEAN (No Text) */}
+          <div className="flex flex-col items-center pt-8 pb-4 relative">
+              <div 
+                  className="relative mb-4 group cursor-pointer active:scale-95 transition-transform"
+                  onClick={handleAvatarClick}
+              >
+                  <div className="w-32 h-32 rounded-full overflow-hidden relative z-10 bg-black/20 border-2 border-white/10 shadow-2xl">
+                      {isUploading ? (
+                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
+                              <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          </div>
+                      ) : (
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
+                              <Icon name="camera" color="white" />
+                          </div>
+                      )}
+                      <img src={avatarUrl} className="w-full h-full object-cover" alt="Avatar" />
+                  </div>
+                  <div className="absolute bottom-1 right-1 z-20 bg-[#30D158] w-9 h-9 rounded-full flex items-center justify-center border-[4px] border-black text-black shadow-lg">
+                      <div className="scale-75"><Icon name="check" size={20} color="black"/></div>
+                  </div>
+              </div>
+              {/* Name and Email removed as requested */}
+          </div>
+
+          {/* MAIN SETTINGS */}
+          <div>
+              <ProfileBlock>
+                  <MenuRow 
+                    color="#0A84FF" 
+                    icon="user" 
+                    label="Личные данные" 
+                    subLabel="Изменить"
+                    onClick={() => {}} 
+                  />
+                  <MenuRow 
+                    color="#BF5AF2" 
+                    icon="file-text" 
+                    label="Экспорт данных" 
+                    subLabel="PDF" 
+                    isLast 
+                    onClick={() => {}} 
+                  />
+              </ProfileBlock>
+          </div>
+
+          {/* FINANCE SETTINGS */}
+          <div>
+              <ProfileBlock>
+                  <MenuRow 
+                    color="#30D158" 
+                    icon="dollar" 
+                    label="Валюта" 
+                    subLabel="RUB (₽)" 
+                    onClick={() => {}} 
+                  />
+                  <MenuRow 
+                    color="#FF9F0A" 
+                    icon="calendar" 
+                    label="Начало месяца" 
+                    subLabel="1-е число" 
+                    onClick={() => {}} 
+                  />
+                  <MenuRow 
+                    color="#64D2FF" 
+                    icon="tag" 
+                    label="Категории" 
+                    subLabel="Настроить"
+                    isLast
+                    onClick={() => navigate('/categories')} 
+                  />
+              </ProfileBlock>
+          </div>
+
+          {/* APP SETTINGS */}
+          <div>
+              <ProfileBlock>
+                  <MenuRow 
+                    color="#0A84FF" 
+                    icon="smartphone" 
+                    label="Тема оформления" 
+                    subLabel="Dark iOS" 
+                    onClick={() => {}} 
+                  />
+                  <MenuRow 
+                    color="#FF375F" 
+                    icon="bell" 
+                    label="Уведомления" 
+                    subLabel="Вкл" 
+                    isLast 
+                    onClick={() => {}} 
+                  />
+              </ProfileBlock>
+          </div>
+
+          {/* SECURITY & LOGOUT */}
+          <div className="pt-2 space-y-4 pb-8">
+              <ProfileBlock>
+                <MenuRow 
+                    color="#30D158" 
+                    icon="shield" 
+                    label="Безопасность" 
+                    subLabel="Пароль"
+                    onClick={() => {}} 
+                />
+                <MenuRow 
+                    color="#FFD60A" 
+                    icon="message" 
+                    label="Поддержка" 
+                    isLast 
+                    onClick={() => {}} 
+                />
+              </ProfileBlock>
+
+              <ProfileActionButton
+                  onClick={signOut}
+                  label="Выйти из аккаунта"
+                  color="#FF3B30"
+              />
+          </div>
+
+          <div className="text-center pb-4">
+            <p className="text-xs text-neutral-500/40">FinTrack PWA v1.0.3</p>
+          </div>
+      </div>
+    </div>
+  );
+};
