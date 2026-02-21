@@ -80,7 +80,7 @@ export const Dashboard: React.FC = () => {
                 </div>
                 <div className="overflow-hidden">
                     <p className="text-[10px] text-secondary/60 uppercase font-bold tracking-wide mb-0.5">Доход</p>
-                    <p className="text-[15px] font-bold text-white truncate">+{income.toLocaleString('ru-RU')}</p>
+                    <p className="text-[15px] font-bold text-secondary truncate">+{income.toLocaleString('ru-RU')}</p>
                 </div>
             </div>
             <div className="bg-[#2C2C2E]/50 rounded-[18px] p-3 flex items-center gap-3 border border-white/5">
@@ -89,7 +89,7 @@ export const Dashboard: React.FC = () => {
                 </div>
                  <div className="overflow-hidden">
                     <p className="text-[10px] text-secondary/60 uppercase font-bold tracking-wide mb-0.5">Расход</p>
-                    <p className="text-[15px] font-bold text-white truncate">-{expense.toLocaleString('ru-RU')}</p>
+                    <p className="text-[15px] font-bold text-secondary truncate">-{expense.toLocaleString('ru-RU')}</p>
                 </div>
             </div>
          </div>
@@ -98,7 +98,7 @@ export const Dashboard: React.FC = () => {
       {/* Monthly Limit Widget - iOS Style */}
       <div className="bg-[#1C1C1E] rounded-[24px] p-5 relative overflow-hidden">
           <div className="flex justify-between items-center mb-3">
-              <h3 className="text-[15px] font-bold text-white ml-1">Лимит на месяц</h3>
+              <h3 className="text-[15px] font-bold text-secondary ml-1">Лимит на месяц</h3>
               <button 
                 onClick={() => setIsEditingLimit(!isEditingLimit)}
                 className="text-[#0A84FF] text-[13px] font-medium active:opacity-60"
@@ -132,7 +132,7 @@ export const Dashboard: React.FC = () => {
                 <div className="flex justify-between items-center px-1">
                     <div className="flex flex-col">
                         <span className="text-[11px] text-secondary/50 font-medium uppercase tracking-wide">Осталось</span>
-                        <span className={`text-[15px] font-bold ${remaining < 0 ? 'text-[#FF453A]' : 'text-white'}`}>
+                        <span className={`text-[15px] font-bold ${remaining < 0 ? 'text-[#FF453A]' : 'text-secondary'}`}>
                             {remaining.toLocaleString('ru-RU')} ₽
                         </span>
                     </div>
@@ -149,7 +149,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Chart Section - Grey Block */}
       <div className="bg-[#1C1C1E] rounded-[24px] p-5 h-[240px] flex flex-col">
-         <h3 className="text-[15px] font-bold text-white mb-4 ml-1">Динамика</h3>
+         <h3 className="text-[15px] font-bold text-secondary mb-4 ml-1">Динамика</h3>
          <div className="flex-1 w-full min-h-0 relative -ml-2">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>

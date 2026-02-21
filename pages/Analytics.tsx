@@ -121,11 +121,11 @@ export const Analytics: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-l-[#30D158] overflow-hidden">
                 <p className="text-[10px] text-secondary/60 font-bold uppercase">Доходы</p>
-                <p className="text-[17px] font-bold mt-1 text-white truncate">{income.toLocaleString()} ₽</p>
+                <p className="text-[17px] font-bold mt-1 text-secondary truncate">{income.toLocaleString()} ₽</p>
             </div>
             <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-l-[#FF453A] overflow-hidden">
                 <p className="text-[10px] text-secondary/60 font-bold uppercase">Расходы</p>
-                <p className="text-[17px] font-bold mt-1 text-white truncate">{expense.toLocaleString()} ₽</p>
+                <p className="text-[17px] font-bold mt-1 text-secondary truncate">{expense.toLocaleString()} ₽</p>
             </div>
           </div>
           
@@ -133,7 +133,7 @@ export const Analytics: React.FC = () => {
           <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-l-[#0A84FF] overflow-hidden flex items-center justify-between">
              <div>
                 <p className="text-[10px] text-secondary/60 font-bold uppercase">Накоплено</p>
-                <p className="text-xl font-bold mt-1 text-white truncate">{saved.toLocaleString()} ₽</p>
+                <p className="text-xl font-bold mt-1 text-secondary truncate">{saved.toLocaleString()} ₽</p>
              </div>
              <div className="bg-[#0A84FF]/10 px-3 py-1 rounded-full">
                  <span className="text-xs text-[#0A84FF] font-bold">{(saved > 0 ? '+' : '') + Math.round((saved / (income || 1)) * 100)}%</span>
@@ -144,7 +144,7 @@ export const Analytics: React.FC = () => {
       {/* Combined Chart & Categories Block */}
       <div className="bg-[#1C1C1E] rounded-[24px] p-6 flex flex-col gap-8">
          <div className="flex justify-between items-center">
-             <h3 className="font-bold text-lg text-white">Структура расходов</h3>
+             <h3 className="font-bold text-lg text-secondary">Структура расходов</h3>
          </div>
          
          {/* 3D-like Pie Chart */}
@@ -172,7 +172,7 @@ export const Analytics: React.FC = () => {
                                 stroke="rgba(0,0,0,0.2)"
                                 strokeWidth={1}
                                 style={{ 
-                                    filter: 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))', // 3D Shadow effect
+                                    filter: `drop-shadow(0px 10px 10px ${entry.color}40)`, // Enhanced 3D glow/shadow
                                     transformOrigin: 'center center',
                                     transition: 'all 0.3s ease'
                                 }}
@@ -181,6 +181,11 @@ export const Analytics: React.FC = () => {
                     </Pie>
                 </PieChart>
             </ResponsiveContainer>
+            
+            {/* Inner 3D Depth Effect Ring */}
+             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-[120px] h-[120px] rounded-full border-[8px] border-[#2C2C2E] shadow-[inset_0_4px_10px_rgba(0,0,0,0.5)] opacity-50"></div>
+            </div>
          </div>
 
          {/* Categories List (Merged) */}
@@ -198,14 +203,14 @@ export const Analytics: React.FC = () => {
                                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.color, boxShadow: `0 0 8px ${p.color}` }} />
                             </div>
                             <div>
-                                <p className="font-medium text-sm text-white">{p.name}</p>
+                                <p className="font-medium text-sm text-secondary">{p.name}</p>
                                 <div className="w-24 h-1 bg-[#2C2C2E] rounded-full mt-1.5 overflow-hidden">
                                     <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.round((p.value / expense) * 100)}%`, backgroundColor: p.color }} />
                                 </div>
                             </div>
                         </div>
                         <div className="text-right">
-                            <p className="font-bold text-sm text-white">{p.value.toLocaleString()} ₽</p>
+                            <p className="font-bold text-sm text-secondary">{p.value.toLocaleString()} ₽</p>
                             <p className="text-[11px] text-secondary/50">{Math.round((p.value / expense) * 100)}%</p>
                         </div>
                     </div>
@@ -216,7 +221,7 @@ export const Analytics: React.FC = () => {
 
       {/* Export Block */}
       <div className="bg-[#1C1C1E] rounded-[24px] p-5">
-          <h3 className="text-[15px] font-bold text-white mb-4 ml-1">Экспорт данных</h3>
+          <h3 className="text-[15px] font-bold text-secondary mb-4 ml-1">Экспорт данных</h3>
           <div className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-3">
                   <div className="bg-black/20 rounded-[16px] px-3 py-2 border border-white/5">

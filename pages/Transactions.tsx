@@ -97,7 +97,7 @@ const SwipeableTransactionItem: React.FC<{
                         </div>
                         
                         <div>
-                            <p className="font-semibold text-[15px] text-white leading-snug">{(t as any).title || cat?.name}</p>
+                            <p className="font-semibold text-[15px] text-secondary leading-snug">{(t as any).title || cat?.name}</p>
                             {t.description && (
                                 <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
                                     {t.description}

@@ -90,24 +90,33 @@ export const AddTransactionModal: React.FC = () => {
             <p className="text-[10px] text-secondary/40 font-bold uppercase tracking-widest mt-1">Сумма</p>
           </div>
 
-          {/* Category Selector - Compact Scroll */}
+          {/* Category Selector - Colorful Chips */}
           <div className="py-1">
             <div className="flex justify-between items-center mb-2 px-1">
                <label className="text-[11px] text-secondary/60 uppercase tracking-wider font-bold">Категория</label>
             </div>
-            <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-2 -mx-1 px-1">
+            <div className="flex flex-wrap gap-2">
               {categories.filter(c => c.type === 'both' || c.type === type).map(cat => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setCategoryId(cat.id)}
-                  className={`flex-shrink-0 flex flex-col items-center gap-2 p-1.5 pb-2 min-w-[68px] rounded-[20px] border transition-all duration-300 ${categoryId === cat.id ? 'bg-white/10 border-[#0A84FF]/50 scale-100' : 'border-transparent hover:bg-white/5 scale-95 opacity-70 hover:opacity-100'}`}
+                  className={`
+                    flex items-center gap-2 px-3 py-2 rounded-[16px] border transition-all duration-200 active:scale-95
+                    ${categoryId === cat.id 
+                        ? 'brightness-110 shadow-lg scale-[1.02]' 
+                        : 'opacity-60 hover:opacity-100 grayscale-[0.3] hover:grayscale-0'}
+                  `}
+                  style={{ 
+                      backgroundColor: `${cat.color}20`, 
+                      borderColor: categoryId === cat.id ? cat.color : 'transparent',
+                      boxShadow: categoryId === cat.id ? `0 4px 12px ${cat.color}30` : 'none'
+                  }}
                 >
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-white transition-transform relative" style={{ backgroundColor: `${cat.color}30` }}>
-                    <div className="absolute inset-0 rounded-full border border-white/10"></div>
-                    <Icon name={cat.icon} size={18} color={cat.color} />
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: cat.color }}>
+                    <Icon name={cat.icon} size={14} />
                   </div>
-                  <span className={`text-[10px] text-center truncate w-full font-medium leading-tight ${categoryId === cat.id ? 'text-white' : 'text-secondary/60'}`}>{cat.name}</span>
+                  <span className="text-[12px] font-bold text-white leading-none">{cat.name}</span>
                 </button>
               ))}
             </div>

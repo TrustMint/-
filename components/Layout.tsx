@@ -13,6 +13,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const { showModal } = useModal();
 
+  // Scroll Isolation: Reset scroll position when route changes
+  React.useEffect(() => {
+      const scrollContainer = document.getElementById('main-scroll-container');
+      if (scrollContainer) {
+          scrollContainer.scrollTo(0, 0);
+      }
+  }, [location.pathname]);
+
   const isActive = (path: string) => location.pathname === path;
 
   const NavItem = ({ path, icon, label }: { path: string, icon: string, label: string }) => (

@@ -71,19 +71,6 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
 
     return (
         <div className="md:hidden">
-            {/* Floating Add Button - Pinned to Bottom Right */}
-            <div className="fixed bottom-[calc(84px+env(safe-area-inset-bottom)+16px)] right-4 z-[101]">
-                <button
-                    onClick={() => { triggerHaptic(); onOpenAdd(); }}
-                    className="w-14 h-14 rounded-full flex items-center justify-center active:scale-90 transition-transform duration-200 bg-[#0A84FF] text-white shadow-lg shadow-blue-500/40"
-                    style={{
-                        boxShadow: '0 8px 32px rgba(10, 132, 255, 0.4)', 
-                    }}
-                >
-                    <Icon name="plus" size={28} strokeWidth={3} />
-                </button>
-            </div>
-
             {/* Navigation Panel */}
             <div 
                 className="fixed left-0 right-0 z-[100] pointer-events-none"
@@ -98,9 +85,24 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                         borderRadius: '24px' 
                     }}
                 >
-                    <div className="flex items-center justify-between h-[84px] px-6">
+                    <div className="flex items-center justify-between h-[84px] px-2">
                         <NavItem path="/" icon="dashboard" label="Главная" />
                         <NavItem path="/transactions" icon="list" label="История" />
+                        
+                        {/* Central Add Button - Glass Style */}
+                        <div className="relative -top-6">
+                            <button
+                                onClick={() => { triggerHaptic(); onOpenAdd(); }}
+                                className="w-16 h-16 rounded-full flex items-center justify-center active:scale-90 transition-transform duration-200 backdrop-blur-xl border border-white/10 shadow-2xl"
+                                style={{
+                                    backgroundColor: 'rgba(30, 30, 30, 0.6)',
+                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
+                                }}
+                            >
+                                <Icon name="plus" size={32} className="text-white/60" strokeWidth={2} />
+                            </button>
+                        </div>
+
                         <NavItem path="/analytics" icon="chart" label="Отчеты" />
                         <NavItem path="/settings" icon="settings" label="Меню" />
                     </div>
