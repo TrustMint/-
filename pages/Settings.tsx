@@ -46,15 +46,8 @@ export const Settings: React.FC = () => {
           className="hidden" 
       />
 
-      {/* Decorative background blur */}
-      <div className="fixed inset-0 pointer-events-none -z-10">
-           <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[80%] h-[40%] bg-[#0A84FF]/20 blur-[100px] rounded-full opacity-60"></div>
-      </div>
-
       <div className="space-y-6">
           
-          <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none pt-2">Настройки</h1>
-
           {/* AVATAR HEADER - CLEAN (No Text) */}
           <div className="flex flex-col items-center pt-4 pb-4 relative">
               <div 
@@ -72,9 +65,6 @@ export const Settings: React.FC = () => {
                           </div>
                       )}
                       <img src={avatarUrl} className="w-full h-full object-cover" alt="Avatar" />
-                  </div>
-                  <div className="absolute bottom-1 right-1 z-20 bg-[#30D158] w-9 h-9 rounded-full flex items-center justify-center border-[4px] border-black text-black shadow-lg">
-                      <div className="scale-75"><Icon name="check" size={20} color="black"/></div>
                   </div>
               </div>
               {/* Name and Email removed as requested */}

@@ -88,12 +88,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* --- MAIN CONTENT (SCROLLABLE AREA) --- */}
       <main 
-        className="flex-1 w-full md:ml-20 lg:ml-64 h-full relative overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-y-contain bg-black"
+        className="flex-1 w-full md:ml-20 lg:ml-64 h-full relative overflow-y-auto overflow-x-hidden custom-scrollbar bg-black"
         id="main-scroll-container"
         {...dragHandlers}
         style={{
             ...dragHandlers.style,
-            ...(isDragging ? pushedStyle : {})
+            ...(isDragging ? pushedStyle : {}),
+            overscrollBehaviorY: 'none' // Disable rubber-banding
         }}
       >
         {isDragging && <SwipeBackShadow progress={dragProgress} />}
@@ -110,13 +111,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
 
         {/* Content Wrapper with padding for bottom nav */}
-        <div className="max-w-[1200px] mx-auto px-4 pt-2 pb-[calc(84px+env(safe-area-inset-bottom)+40px)] md:p-8 md:pb-8 min-h-full">
+        <div className="max-w-[1200px] mx-auto px-4 pt-2 pb-[calc(84px+env(safe-area-inset-bottom)+60px)] md:p-8 md:pb-8 min-h-full">
           {children}
         </div>
       </main>
 
       {/* --- MOBILE LIQUID NAVIGATION (Bottom) --- */}
-      <LiquidNavigation onOpenAdd={handleOpenAdd} />
+      {isRootPath && <LiquidNavigation onOpenAdd={handleOpenAdd} />}
     </div>
   );
 };

@@ -63,6 +63,7 @@ body {
     height: 100%;
     position: relative;
     overflow: hidden;
+    overscroll-behavior: none; /* Ensure root also doesn't rubber-band */
 }
 
 /* Inputs should allow selection */

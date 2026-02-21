@@ -95,23 +95,23 @@ export const AddTransactionModal: React.FC = () => {
             <div className="flex justify-between items-center mb-3 px-2">
                <label className="text-[11px] text-secondary/60 uppercase tracking-wider font-bold">Категория</label>
             </div>
-            <div className="flex flex-wrap gap-2.5 justify-center">
+            <div className="flex flex-wrap gap-2 justify-start">
               {categories.filter(c => c.type === 'both' || c.type === type).map(cat => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setCategoryId(cat.id)}
                   className={`
-                    flex flex-col items-center gap-2 p-3 rounded-[24px] border transition-all duration-200 active:scale-90 w-[84px] h-[84px] justify-center
+                    flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200 active:scale-95
                     ${categoryId === cat.id 
-                        ? 'brightness-110 shadow-xl scale-105 bg-white/10 border-white/20' 
-                        : 'opacity-70 hover:opacity-100 border-transparent hover:bg-white/5'}
+                        ? 'brightness-110 shadow-lg scale-[1.02] bg-white/10 border-white/20' 
+                        : 'opacity-70 hover:opacity-100 border-transparent hover:bg-white/5 bg-white/5'}
                   `}
                 >
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md" style={{ backgroundColor: cat.color }}>
-                    <Icon name={cat.icon} size={20} />
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-white shadow-sm shrink-0" style={{ backgroundColor: cat.color }}>
+                    <Icon name={cat.icon} size={12} />
                   </div>
-                  <span className="text-[10px] font-bold text-white/90 leading-none text-center truncate w-full">{cat.name}</span>
+                  <span className="text-[11px] font-bold text-white/90 leading-none whitespace-nowrap">{cat.name}</span>
                 </button>
               ))}
             </div>

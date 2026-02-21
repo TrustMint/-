@@ -40,7 +40,7 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
             <button
                 onClick={() => handleNavigate(path)}
                 className="flex-1 flex flex-col items-center justify-center h-full relative group pt-2 pb-1"
-                style={{ WebkitTapHighlightColor: 'transparent' }}
+                style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
             >
                 {/* Icon Container */}
                 <div 
@@ -70,11 +70,13 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
             <div className="absolute bottom-[calc(84px+env(safe-area-inset-bottom)+16px)] right-4 pointer-events-auto z-[101]">
                 <button
                     onClick={() => { triggerHaptic(); onOpenAdd(); }}
-                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.5)] active:scale-90 transition-transform duration-300 border border-white/20 backdrop-blur-xl"
+                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.5)] active:scale-90 transition-transform duration-300 backdrop-blur-xl"
                     style={{
-                        background: 'rgba(20, 20, 20, 0.6)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
+                        background: 'rgba(20, 20, 20, 0.4)', // Matching nav panel glass
+                        backdropFilter: 'blur(5px)',
+                        WebkitBackdropFilter: 'blur(5px)',
+                        border: 'none', // No border as requested
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.4)'
                     }}
                 >
                     <Icon name="plus" size={28} color="#0A84FF" strokeWidth={2.5} />

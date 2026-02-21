@@ -54,7 +54,7 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6 pt-2 animate-fade-in">
       {/* Header: Date Only - Integrated into flow */}
       <div className="px-1">
-        <p className="text-secondary/60 text-[26px] font-bold uppercase tracking-widest leading-none">
+        <p className="text-secondary/60 text-[13px] font-bold uppercase tracking-widest leading-none">
           {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
@@ -71,28 +71,28 @@ export const Dashboard: React.FC = () => {
                 <span className="text-xl text-secondary/60 font-medium">₽</span>
              </div>
          </div>
+      </div>
 
-         {/* Income/Expense Row */}
-         <div className="grid grid-cols-2 gap-3 mt-2 relative z-10">
-            <div className="bg-[#2C2C2E]/50 rounded-[18px] p-3 flex items-center gap-3 border border-white/5">
-                <div className="w-10 h-10 rounded-full bg-[#30D158]/10 flex items-center justify-center text-[#30D158]">
-                    <Icon name="trending-down" size={20} className="rotate-180" />
-                </div>
-                <div className="overflow-hidden">
-                    <p className="text-[10px] text-secondary/60 uppercase font-bold tracking-wide mb-0.5">Доход</p>
-                    <p className="text-[15px] font-bold text-secondary truncate">+{income.toLocaleString('ru-RU')}</p>
-                </div>
+      {/* Income/Expense Row - Moved Out */}
+      <div className="grid grid-cols-2 gap-3 mt-2 relative z-10">
+        <div className="bg-[#1C1C1E] rounded-[24px] p-4 flex items-center gap-3 border border-white/5">
+            <div className="w-10 h-10 rounded-full bg-[#30D158]/10 flex items-center justify-center text-[#30D158] shrink-0">
+                <Icon name="trending-down" size={20} className="rotate-180" />
             </div>
-            <div className="bg-[#2C2C2E]/50 rounded-[18px] p-3 flex items-center gap-3 border border-white/5">
-                <div className="w-10 h-10 rounded-full bg-[#FF453A]/10 flex items-center justify-center text-[#FF453A]">
-                    <Icon name="trending-down" size={20} />
-                </div>
-                 <div className="overflow-hidden">
-                    <p className="text-[10px] text-secondary/60 uppercase font-bold tracking-wide mb-0.5">Расход</p>
-                    <p className="text-[15px] font-bold text-secondary truncate">-{expense.toLocaleString('ru-RU')}</p>
-                </div>
+            <div className="overflow-hidden min-w-0">
+                <p className="text-[10px] text-secondary/60 uppercase font-bold tracking-wide mb-0.5">Доход</p>
+                <p className="text-[13px] font-bold text-secondary truncate">+{income.toLocaleString('ru-RU')}</p>
             </div>
-         </div>
+        </div>
+        <div className="bg-[#1C1C1E] rounded-[24px] p-4 flex items-center gap-3 border border-white/5">
+            <div className="w-10 h-10 rounded-full bg-[#FF453A]/10 flex items-center justify-center text-[#FF453A] shrink-0">
+                <Icon name="trending-down" size={20} />
+            </div>
+             <div className="overflow-hidden min-w-0">
+                <p className="text-[10px] text-secondary/60 uppercase font-bold tracking-wide mb-0.5">Расход</p>
+                <p className="text-[13px] font-bold text-secondary truncate">-{expense.toLocaleString('ru-RU')}</p>
+            </div>
+        </div>
       </div>
 
       {/* Monthly Limit Widget - iOS Style */}
@@ -147,8 +147,8 @@ export const Dashboard: React.FC = () => {
           )}
       </div>
 
-      {/* Chart Section - Reverted to Cleaner Look */}
-      <div className="h-[240px] flex flex-col">
+      {/* Chart Section - Restored */}
+      <div className="bg-[#1C1C1E] rounded-[24px] p-5 h-[240px] flex flex-col">
          <h3 className="text-[15px] font-bold text-secondary mb-4 ml-1">Динамика</h3>
          <div className="flex-1 w-full min-h-0 relative -ml-2">
             <ResponsiveContainer width="100%" height="100%">
