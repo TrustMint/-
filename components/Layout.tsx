@@ -28,6 +28,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const NavItem = ({ path, icon, label }: { path: string, icon: string, label: string }) => (
     <Link 
       to={path} 
+      replace={true} // Prevent history buildup for tabs
       className={`
         group flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 md:flex-row
         ${isActive(path) 
@@ -49,20 +50,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const rootPaths = ['/', '/transactions', '/analytics', '/categories', '/settings'];
   const isRootPath = rootPaths.includes(location.pathname);
 
-  // COMPLETELY DISABLE SWIPE BACK ON ROOT PATHS
-  // The hook will return no-op handlers if enabled is false
-  const { dragHandlers, pushedStyle, isDragging, dragProgress } = useSwipeBack({
-      onSwipeBack: () => navigate(-1),
-      enabled: false // DISABLED FOR NOW AS REQUESTED "убери свайп с основных экранов" - assuming globally or just root? "с основных экранов" usually means root tabs. 
-      // Actually, let's disable it ONLY on root paths as before, but ensure it REALLY works.
-      // If the user says "why didn't you remove it", maybe they are on a root path and it's still swiping?
-      // Let's force enabled=false for root paths.
-  });
+  // Enable swipe back ONLY for non-root paths (inner pages)
+  const swipeEnabled = !isRootPath; 
   
-  // Override enabled to be strictly false for root paths
-  const swipeEnabled = false; // DISABLED GLOBALLY AS REQUESTED "убери свайпы на главных страницах разделов говорю еще раз и больше никогда не допаял их туда"
-  
-  // Re-initialize hook with strict boolean
   const swipeBack = useSwipeBack({
       onSwipeBack: () => navigate(-1),
       enabled: swipeEnabled

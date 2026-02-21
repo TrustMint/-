@@ -30,7 +30,8 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
         }
 
         triggerHaptic();
-        navigate(path);
+        // Use replace: true to prevent history stack buildup for main tabs
+        navigate(path, { replace: true });
     };
 
     const NavItem = ({ path, icon, label }: { path: string, icon: string, label: string }) => {
