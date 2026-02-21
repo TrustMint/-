@@ -123,7 +123,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
 
     if (deltaY > 0) {
         if (e.cancelable) e.preventDefault();
-        const resistance = 1; 
+        const resistance = 0.5; // Increased resistance (was 1)
         contentRef.current.style.transform = `translateY(${deltaY * resistance}px)`;
         
         if (modalRef.current) {
@@ -143,10 +143,15 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     const timeDelta = Date.now() - startTimeRef.current;
     const velocity = Math.abs(deltaY / timeDelta);
     const SCREEN_HEIGHT = window.innerHeight;
-    const DISTANCE_THRESHOLD = SCREEN_HEIGHT * 0.35; 
-    const VELOCITY_THRESHOLD = 0.6; 
+    const DISTANCE_THRESHOLD = SCREEN_HEIGHT * 0.4; // Increased threshold (was 0.35)
+    const VELOCITY_THRESHOLD = 0.8; // Increased velocity threshold (was 0.6)
 
-    const shouldClose = (deltaY > DISTANCE_THRESHOLD) || (deltaY > 80 && velocity > VELOCITY_THRESHOLD);
+    // Check against resistance-adjusted delta? No, deltaY is raw touch movement.
+    // But visual movement is deltaY * 0.5. 
+    // Usually threshold is based on visual movement or raw? 
+    // Let's use raw deltaY for threshold but require MORE of it.
+    
+    const shouldClose = (deltaY > DISTANCE_THRESHOLD) || (deltaY > 150 && velocity > VELOCITY_THRESHOLD);
 
     if (shouldClose) {
         hideModal();
@@ -199,44 +204,48 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
               bg-[#151515]/75
               backdrop-blur-3xl
               backdrop-saturate-150
-              border-t-[0.5px] border-l-[0.5px] border-r-[0.5px] border-white/10
-              shadow-[0_-20px_60px_rgba(0,0,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.1)]
+              
+              /* Removed borders as requested */
+              shadow-[0_-20px_60px_rgba(0,0,0,0.7)]
               
               rounded-t-[40px] sm:rounded-[40px]
               
               flex flex-col
               overflow-hidden
-              max-h-[85vh] sm:max-h-[calc(100vh-100px)]
-              max-w-full sm:max-w-md
+              h-[92vh] sm:h-auto sm:max-h-[calc(100vh-100px)]
+              w-full sm:max-w-md
               
               transform-gpu will-change-transform
-              transition-all duration-[700ms] cubic-bezier(0.175, 0.885, 0.32, 1.1)
+              /* SMOOTH IOS ANIMATION */
+              transition-all duration-500 cubic-bezier(0.32, 0.72, 0, 1)
               ${isVisible 
                 ? 'translate-y-0 scale-100 opacity-100' 
-                : 'translate-y-[110%] scale-[0.95] opacity-0'
+                : 'translate-y-[100%] scale-100 opacity-0'
               }
             `}
             onClick={(e) => e.stopPropagation()}
             style={{
               // Ensure bottom safe area is respected on mobile
               paddingBottom: 'env(safe-area-inset-bottom)',
+              margin: 0, // Full width on mobile
               ...(typeof window !== 'undefined' && window.innerWidth >= 640 && { 
                 margin: 'auto',
                 borderRadius: '40px',
-                borderBottom: '0.5px solid rgba(255,255,255,0.1)'
               })
             }}
           >
             {/* Handle Bar */}
-            <div className="flex-shrink-0 relative h-6 w-full flex justify-center pt-3 cursor-grab active:cursor-grabbing touch-none z-50">
-              <div className="w-9 h-1 bg-white/20 rounded-full" />
+            <div className="flex-shrink-0 relative h-8 w-full flex justify-center pt-4 cursor-grab active:cursor-grabbing touch-none z-50">
+              {/* Increased handle size by 50% (was w-9 h-1 -> w-14 h-1.5) */}
+              <div className="w-14 h-1.5 bg-white/20 rounded-full transition-opacity active:opacity-50" />
               
               {!isLocked && (
                 <button
                     onClick={hideModal}
-                    className="absolute top-3 right-4 w-[26px] h-[26px] flex items-center justify-center rounded-full bg-white/10 transition-transform active:scale-90 hover:bg-white/20"
+                    /* Increased close button size by 50% (was w-[26px] -> w-[39px]) */
+                    className="absolute top-3 right-4 w-[39px] h-[39px] flex items-center justify-center rounded-full bg-white/10 transition-transform active:scale-90 hover:bg-white/20"
                 >
-                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none" className="text-white/60">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-white/60">
                         <path d="M1 13L13 1M1 1L13 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                 </button>
@@ -245,7 +254,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
             
             {/* Scrollable Content */}
             <div 
-                className="overflow-y-auto flex-1 modal-scroll-content px-1 pb-4 overscroll-contain relative z-10 no-scrollbar"
+                className="overflow-y-auto flex-1 modal-scroll-content px-1 pb-10 overscroll-contain relative z-10 no-scrollbar"
                 style={{ overscrollBehaviorY: 'contain' }}
             >
               {modalContent}

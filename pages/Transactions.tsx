@@ -167,7 +167,7 @@ export const Transactions: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in relative min-h-full">
+    <div className="space-y-6 relative min-h-full">
       {/* Header - Integrated into flow (not sticky) */}
       <div className="flex justify-between items-center py-4 px-1">
         {/* Styled Title as requested (matching date headers) */}

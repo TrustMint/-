@@ -96,24 +96,37 @@ export const AddTransactionModal: React.FC = () => {
                <label className="text-[11px] text-secondary/60 uppercase tracking-wider font-bold">Категория</label>
             </div>
             <div className="flex flex-wrap gap-2 justify-start">
-              {categories.filter(c => c.type === 'both' || c.type === type).map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setCategoryId(cat.id)}
-                  className={`
-                    flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200 active:scale-95
-                    ${categoryId === cat.id 
-                        ? 'brightness-110 shadow-lg scale-[1.02] bg-white/10 border-white/20' 
-                        : 'opacity-70 hover:opacity-100 border-transparent hover:bg-white/5 bg-white/5'}
-                  `}
-                >
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-white shadow-sm shrink-0" style={{ backgroundColor: cat.color }}>
-                    <Icon name={cat.icon} size={12} />
-                  </div>
-                  <span className="text-[11px] font-bold text-white/90 leading-none whitespace-nowrap">{cat.name}</span>
-                </button>
-              ))}
+              {categories.filter(c => c.type === 'both' || c.type === type).map(cat => {
+                const isSelected = categoryId === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setCategoryId(cat.id)}
+                    className={`
+                      flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200 active:scale-95
+                      ${isSelected ? 'brightness-110 shadow-lg scale-[1.02] border-white/20' : 'opacity-100 hover:opacity-90 border-transparent'}
+                    `}
+                    style={{
+                        // Always colored, slightly transparent when not selected
+                        backgroundColor: isSelected ? cat.color : `${cat.color}50`, 
+                    }}
+                  >
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center shadow-sm shrink-0" 
+                         style={{ 
+                             backgroundColor: 'rgba(255,255,255,0.2)',
+                             color: 'white'
+                         }}>
+                      <Icon name={cat.icon} size={12} />
+                    </div>
+                    <span 
+                        className="text-[11px] font-bold leading-none whitespace-nowrap text-white"
+                    >
+                        {cat.name}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

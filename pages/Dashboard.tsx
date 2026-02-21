@@ -51,7 +51,7 @@ export const Dashboard: React.FC = () => {
   }));
 
   return (
-    <div className="space-y-6 pt-2 animate-fade-in">
+    <div className="space-y-6 pt-2">
       {/* Header: Date Only - Integrated into flow */}
       <div className="px-1">
         <p className="text-secondary/60 text-[13px] font-bold uppercase tracking-widest leading-none">
@@ -145,46 +145,6 @@ export const Dashboard: React.FC = () => {
                 </div>
             </>
           )}
-      </div>
-
-      {/* Chart Section - Restored */}
-      <div className="bg-[#1C1C1E] rounded-[24px] p-5 h-[240px] flex flex-col">
-         <h3 className="text-[15px] font-bold text-secondary mb-4 ml-1">Динамика</h3>
-         <div className="flex-1 w-full min-h-0 relative -ml-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0A84FF" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#0A84FF" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <Tooltip 
-                  cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }}
-                  contentStyle={{ 
-                      backgroundColor: 'rgba(28, 28, 30, 0.9)', 
-                      border: 'none', 
-                      borderRadius: '12px', 
-                      color: '#fff',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                      padding: '8px 12px',
-                      fontSize: '13px'
-                  }}
-                  itemStyle={{ color: '#fff', fontWeight: 600 }}
-                  labelStyle={{ display: 'none' }}
-                  formatter={(value: any) => [`${value.toLocaleString()} ₽`, '']}
-                />
-                <Area 
-                    type="monotone" 
-                    dataKey="amount" 
-                    stroke="#0A84FF" 
-                    strokeWidth={3} 
-                    fillOpacity={1} 
-                    fill="url(#colorAmt)" 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-         </div>
       </div>
 
       {/* Recent Transactions Header - Styled like Date */}

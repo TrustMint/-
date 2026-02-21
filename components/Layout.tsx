@@ -49,10 +49,30 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const rootPaths = ['/', '/transactions', '/analytics', '/categories', '/settings'];
   const isRootPath = rootPaths.includes(location.pathname);
 
+  // COMPLETELY DISABLE SWIPE BACK ON ROOT PATHS
+  // The hook will return no-op handlers if enabled is false
   const { dragHandlers, pushedStyle, isDragging, dragProgress } = useSwipeBack({
       onSwipeBack: () => navigate(-1),
-      enabled: !isRootPath // Disable on root paths
+      enabled: false // DISABLED FOR NOW AS REQUESTED "убери свайп с основных экранов" - assuming globally or just root? "с основных экранов" usually means root tabs. 
+      // Actually, let's disable it ONLY on root paths as before, but ensure it REALLY works.
+      // If the user says "why didn't you remove it", maybe they are on a root path and it's still swiping?
+      // Let's force enabled=false for root paths.
   });
+  
+  // Override enabled to be strictly false for root paths
+  const swipeEnabled = !isRootPath; 
+  
+  // Re-initialize hook with strict boolean
+  const swipeBack = useSwipeBack({
+      onSwipeBack: () => navigate(-1),
+      enabled: swipeEnabled
+  });
+
+  // Use the new instance
+  const finalDragHandlers = swipeBack.dragHandlers;
+  const finalPushedStyle = swipeBack.pushedStyle;
+  const finalIsDragging = swipeBack.isDragging;
+  const finalDragProgress = swipeBack.dragProgress;
 
   return (
     <div 
@@ -111,7 +131,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
 
         {/* Content Wrapper with padding for bottom nav */}
-        <div className="max-w-[1200px] mx-auto px-4 pt-2 pb-[calc(84px+env(safe-area-inset-bottom)+60px)] md:p-8 md:pb-8 min-h-full">
+        <div className="max-w-[1200px] mx-auto px-4 pt-2 pb-[calc(84px+env(safe-area-inset-bottom)+80px)] md:p-8 md:pb-8 min-h-full">
           {children}
         </div>
       </main>

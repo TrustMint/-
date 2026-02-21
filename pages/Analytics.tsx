@@ -98,7 +98,7 @@ export const Analytics: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in pt-2">
+    <div className="space-y-6 pt-2">
       {/* Header */}
       <div className="flex justify-between items-center px-1">
         <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none">Отчеты</h1>
@@ -119,24 +119,21 @@ export const Analytics: React.FC = () => {
       <div className="space-y-3">
           {/* Row 1: Income & Expense */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-l-[#30D158] overflow-hidden">
+            <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-r-4 border-l-[#30D158] border-r-[#30D158] overflow-hidden">
                 <p className="text-[10px] text-secondary/60 font-bold uppercase">Доходы</p>
                 <p className="text-[17px] font-bold mt-1 text-secondary truncate">{income.toLocaleString()} ₽</p>
             </div>
-            <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-l-[#FF453A] overflow-hidden">
+            <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-r-4 border-l-[#FF453A] border-r-[#FF453A] overflow-hidden">
                 <p className="text-[10px] text-secondary/60 font-bold uppercase">Расходы</p>
                 <p className="text-[17px] font-bold mt-1 text-secondary truncate">{expense.toLocaleString()} ₽</p>
             </div>
           </div>
           
           {/* Row 2: Savings (Full Width) */}
-          <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-l-[#0A84FF] overflow-hidden flex items-center justify-between">
+          <div className="bg-[#1C1C1E] rounded-[24px] p-4 border-l-4 border-r-4 border-l-[#0A84FF] border-r-[#0A84FF] overflow-hidden flex items-center justify-between">
              <div>
                 <p className="text-[10px] text-secondary/60 font-bold uppercase">Накоплено</p>
                 <p className="text-xl font-bold mt-1 text-secondary truncate">{saved.toLocaleString()} ₽</p>
-             </div>
-             <div className="bg-[#0A84FF]/10 px-3 py-1 rounded-full">
-                 <span className="text-xs text-[#0A84FF] font-bold">{(saved > 0 ? '+' : '') + Math.round((saved / (income || 1)) * 100)}%</span>
              </div>
           </div>
       </div>
@@ -148,45 +145,33 @@ export const Analytics: React.FC = () => {
          </div>
          
          {/* 3D-like Pie Chart */}
-         <div className="w-full h-[320px] relative flex items-center justify-center">
+         <div className="w-full h-[300px] relative flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                    <defs>
-                        {pieData.map((entry, index) => (
-                            <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor={entry.color} stopOpacity={1}/>
-                                <stop offset="100%" stopColor={entry.color} stopOpacity={0.6}/>
-                            </linearGradient>
-                        ))}
-                        <filter id="shadow-3d" x="-50%" y="-50%" width="200%" height="200%">
-                            <feDropShadow dx="0" dy="10" stdDeviation="10" floodColor="#000" floodOpacity="0.5"/>
-                        </filter>
-                    </defs>
                     <Pie
                         activeIndex={activeIndex}
                         activeShape={renderActiveShape}
                         data={pieData}
                         cx="50%"
                         cy="50%"
-                        innerRadius={80} // Increased for donut look
-                        outerRadius={110} // Thicker ring
-                        paddingAngle={6}
+                        innerRadius={60}
+                        outerRadius={90}
+                        paddingAngle={4}
                         dataKey="value"
                         onClick={onPieEnter}
                         onMouseEnter={onPieEnter}
                         stroke="none"
-                        filter="url(#shadow-3d)"
                     >
                         {pieData.map((entry, index) => (
                             <Cell 
                                 key={`cell-${index}`} 
-                                fill={`url(#gradient-${index})`}
-                                stroke="rgba(255,255,255,0.05)"
+                                fill={entry.color} 
+                                stroke="rgba(0,0,0,0.2)"
                                 strokeWidth={1}
                                 style={{ 
+                                    filter: `drop-shadow(0px 10px 10px ${entry.color}40)`, // Enhanced 3D glow/shadow
                                     transformOrigin: 'center center',
-                                    transition: 'all 0.3s ease',
-                                    outline: 'none'
+                                    transition: 'all 0.3s ease'
                                 }}
                             />
                         ))}
@@ -194,11 +179,9 @@ export const Analytics: React.FC = () => {
                 </PieChart>
             </ResponsiveContainer>
             
-            {/* Center Info (Total) */}
-             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-secondary/40 text-xs font-bold uppercase tracking-widest mb-1">Всего</span>
-                <span className="text-2xl font-bold text-white">{expense.toLocaleString()}</span>
-                <span className="text-sm text-secondary/40 font-medium">RUB</span>
+            {/* Inner 3D Depth Effect Ring */}
+             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-[120px] h-[120px] rounded-full border-[8px] border-[#2C2C2E] shadow-[inset_0_4px_10px_rgba(0,0,0,0.5)] opacity-50"></div>
             </div>
          </div>
 
