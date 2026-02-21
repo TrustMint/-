@@ -6,28 +6,28 @@ export const CURRENCY_SYMBOL: Record<string, string> = {
 
 export const DEFAULT_CATEGORIES: Category[] = [
   // Expenses
-  { id: '1', name: 'Продукты', icon: 'shopping-cart', color: '#FF9F0A', type: 'expense' },
-  { id: '2', name: 'Транспорт', icon: 'car', color: '#0A84FF', type: 'expense' },
-  { id: '3', name: 'Жилье', icon: 'home', color: '#BF5AF2', type: 'expense' },
-  { id: '4', name: 'Кафе', icon: 'coffee', color: '#FF453A', type: 'expense' },
-  { id: '7', name: 'Здоровье', icon: 'heart', color: '#FF375F', type: 'expense' },
-  { id: '8', name: 'Одежда', icon: 'shopping-bag', color: '#5E5CE6', type: 'expense' },
-  { id: '9', name: 'Связь', icon: 'smartphone', color: '#64D2FF', type: 'expense' },
-  { id: '10', name: 'Спорт', icon: 'activity', color: '#30D158', type: 'expense' },
-  { id: '11', name: 'Авто', icon: 'tool', color: '#AC8E68', type: 'expense' },
-  { id: '12', name: 'Питомцы', icon: 'github', color: '#FFD60A', type: 'expense' }, // Using github as paw placeholder
-  { id: '13', name: 'Образование', icon: 'book', color: '#FF9F0A', type: 'expense' },
-  { id: '14', name: 'Подарки', icon: 'gift', color: '#FF2D55', type: 'expense' },
-  { id: '15', name: 'Путешествия', icon: 'map', color: '#0A84FF', type: 'expense' },
-  { id: '16', name: 'Красота', icon: 'sun', color: '#BF5AF2', type: 'expense' },
-  { id: '17', name: 'Техника', icon: 'monitor', color: '#64D2FF', type: 'expense' },
+  { id: '1', name: 'Продукты', icon: 'shopping-cart', color: '#FF9F0A', type: 'expense' }, // Orange
+  { id: '2', name: 'Транспорт', icon: 'car', color: '#0A84FF', type: 'expense' }, // Blue
+  { id: '3', name: 'Жилье', icon: 'home', color: '#BF5AF2', type: 'expense' }, // Purple
+  { id: '4', name: 'Кафе', icon: 'coffee', color: '#FF453A', type: 'expense' }, // Red
+  { id: '7', name: 'Здоровье', icon: 'heart', color: '#FF375F', type: 'expense' }, // Pink
+  { id: '8', name: 'Одежда', icon: 'shopping-bag', color: '#5E5CE6', type: 'expense' }, // Indigo
+  { id: '9', name: 'Связь', icon: 'smartphone', color: '#64D2FF', type: 'expense' }, // Cyan
+  { id: '10', name: 'Спорт', icon: 'activity', color: '#30D158', type: 'expense' }, // Green
+  { id: '11', name: 'Авто', icon: 'tool', color: '#AC8E68', type: 'expense' }, // Brown
+  { id: '12', name: 'Питомцы', icon: 'github', color: '#FFD60A', type: 'expense' }, // Yellow
+  { id: '13', name: 'Образование', icon: 'book', color: '#FF9F0A', type: 'expense' }, // Orange (Repeat but different icon) -> Change to Mint?
+  { id: '14', name: 'Подарки', icon: 'gift', color: '#FF2D55', type: 'expense' }, // Red/Pink
+  { id: '15', name: 'Путешествия', icon: 'map', color: '#40C8E0', type: 'expense' }, // Teal
+  { id: '16', name: 'Красота', icon: 'sun', color: '#D188CF', type: 'expense' }, // Lavender
+  { id: '17', name: 'Техника', icon: 'monitor', color: '#8E8E93', type: 'expense' }, // Gray
   
   // Income
-  { id: '5', name: 'Зарплата', icon: 'briefcase', color: '#30D158', type: 'income' },
-  { id: '6', name: 'Фриланс', icon: 'laptop', color: '#64D2FF', type: 'income' },
-  { id: '18', name: 'Инвестиции', icon: 'trending-up', color: '#30D158', type: 'income' },
-  { id: '19', name: 'Подарки', icon: 'gift', color: '#FFD60A', type: 'income' },
-  { id: '20', name: 'Кэшбэк', icon: 'percent', color: '#FF9F0A', type: 'income' },
+  { id: '5', name: 'Зарплата', icon: 'briefcase', color: '#32D74B', type: 'income' }, // Bright Green
+  { id: '6', name: 'Фриланс', icon: 'laptop', color: '#64D2FF', type: 'income' }, // Cyan
+  { id: '18', name: 'Инвестиции', icon: 'trending-up', color: '#30B0C7', type: 'income' }, // Teal Blue
+  { id: '19', name: 'Подарки', icon: 'gift', color: '#FFD60A', type: 'income' }, // Yellow
+  { id: '20', name: 'Кэшбэк', icon: 'percent', color: '#FF9F0A', type: 'income' }, // Orange
 ];
 
 export const MOCK_TRANSACTIONS: Transaction[] = [

@@ -15,11 +15,14 @@ const SwipeableTransactionItem: React.FC<{
     const isDragging = useRef(false);
     const itemRef = useRef<HTMLDivElement>(null);
 
-    // Сброс состояния при клике в другом месте (можно расширить через контекст, но пока локально)
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    // Сброс состояния при клике в другом месте
     useEffect(() => {
         const handleClickOutside = (e: Event) => {
             if (itemRef.current && !itemRef.current.contains(e.target as Node)) {
                 setOffsetX(0);
+                setIsAnimating(true); // Enable animation for reset
             }
         };
         document.addEventListener('touchstart', handleClickOutside);
@@ -29,6 +32,7 @@ const SwipeableTransactionItem: React.FC<{
     const handleTouchStart = (e: React.TouchEvent) => {
         startX.current = e.touches[0].clientX;
         isDragging.current = true;
+        setIsAnimating(false); // Disable animation during drag for instant response
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
@@ -38,18 +42,23 @@ const SwipeableTransactionItem: React.FC<{
 
         // Разрешаем тянуть только влево (отрицательный diff)
         if (diff < 0) {
-            // Ограничиваем сдвиг до -140px (ширина кнопок) с небольшим "резиновым" эффектом
-            if (diff > -160) {
-                setOffsetX(diff);
+            // Add resistance (0.6 factor)
+            const resistedDiff = diff * 0.6;
+            
+            // Ограничиваем сдвиг
+            if (resistedDiff > -160) {
+                setOffsetX(resistedDiff);
             }
         } else if (offsetX < 0) {
-            // Если уже открыто, позволяем закрывать свайпом вправо
-             setOffsetX(Math.min(0, offsetX + diff));
+            // Если уже открыто, позволяем закрывать
+             setOffsetX(Math.min(0, offsetX + (diff * 0.6)));
         }
     };
 
     const handleTouchEnd = () => {
         isDragging.current = false;
+        setIsAnimating(true); // Re-enable animation for snap
+        
         // Порог срабатывания открытия (60px)
         if (offsetX < -60) {
             setOffsetX(-130); // Фиксируем открытое состояние
@@ -65,13 +74,13 @@ const SwipeableTransactionItem: React.FC<{
             {/* Background Actions (Revealed on Swipe) */}
             <div className="absolute inset-y-0 right-0 flex items-center gap-3 pr-2 z-0">
                 <button 
-                    onClick={() => { setOffsetX(0); onEdit(t.id); }}
+                    onClick={() => { setIsAnimating(true); setOffsetX(0); onEdit(t.id); }}
                     className="w-12 h-12 rounded-full bg-[#0A84FF] flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform"
                 >
                     <Icon name="file-text" size={20} />
                 </button>
                 <button 
-                    onClick={() => { setOffsetX(0); onDelete(t.id); }}
+                    onClick={() => { setIsAnimating(true); setOffsetX(0); onDelete(t.id); }}
                     className="w-12 h-12 rounded-full bg-[#FF453A] flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform"
                 >
                     <Icon name="trash" size={20} />
@@ -80,7 +89,7 @@ const SwipeableTransactionItem: React.FC<{
 
             {/* Foreground Content */}
             <div 
-                className="relative z-10 bg-[#1C1C1E] rounded-[24px] overflow-hidden transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] touch-pan-y"
+                className={`relative z-10 bg-[#1C1C1E] rounded-[24px] overflow-hidden touch-pan-y ${isAnimating ? 'transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]' : ''}`}
                 style={{ transform: `translateX(${offsetX}px)` }}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}

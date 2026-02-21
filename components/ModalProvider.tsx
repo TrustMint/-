@@ -212,7 +212,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
               
               flex flex-col
               overflow-hidden
-              h-[92vh] sm:h-auto sm:max-h-[calc(100vh-100px)]
+              h-auto max-h-[92vh] sm:max-h-[calc(100vh-100px)]
               w-full sm:max-w-md
               
               transform-gpu will-change-transform
@@ -234,8 +234,8 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
               })
             }}
           >
-            {/* Handle Bar */}
-            <div className="flex-shrink-0 relative h-8 w-full flex justify-center pt-4 cursor-grab active:cursor-grabbing touch-none z-50">
+            {/* Handle Bar - Compact */}
+            <div className="flex-shrink-0 relative h-6 w-full flex justify-center pt-2 cursor-grab active:cursor-grabbing touch-none z-50">
               {/* Increased handle size by 50% (was w-9 h-1 -> w-14 h-1.5) */}
               <div className="w-14 h-1.5 bg-white/20 rounded-full transition-opacity active:opacity-50" />
               
@@ -243,7 +243,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
                 <button
                     onClick={hideModal}
                     /* Increased close button size by 50% (was w-[26px] -> w-[39px]) */
-                    className="absolute top-3 right-4 w-[39px] h-[39px] flex items-center justify-center rounded-full bg-white/10 transition-transform active:scale-90 hover:bg-white/20"
+                    className="absolute top-2 right-4 w-[39px] h-[39px] flex items-center justify-center rounded-full bg-white/10 transition-transform active:scale-90 hover:bg-white/20"
                 >
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-white/60">
                         <path d="M1 13L13 1M1 1L13 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -252,9 +252,9 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
               )}
             </div>
             
-            {/* Scrollable Content */}
+            {/* Scrollable Content - Minimized Padding */}
             <div 
-                className="overflow-y-auto flex-1 modal-scroll-content px-1 pb-10 overscroll-contain relative z-10 no-scrollbar"
+                className="overflow-y-auto flex-1 modal-scroll-content px-1 pb-4 overscroll-contain relative z-10 no-scrollbar"
                 style={{ overscrollBehaviorY: 'contain' }}
             >
               {modalContent}
