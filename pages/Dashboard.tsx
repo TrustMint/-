@@ -51,7 +51,7 @@ export const Dashboard: React.FC = () => {
   }));
 
   return (
-    <div className="space-y-6 pt-2 pb-24 animate-fade-in">
+    <div className="space-y-6 pt-2 animate-fade-in">
       {/* Header: Date Only - Integrated into flow */}
       <div className="px-1">
         <p className="text-secondary/60 text-[13px] font-semibold uppercase tracking-widest">

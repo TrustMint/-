@@ -11,60 +11,57 @@
   --accent: #0A84FF;
   --income: #30D158;
   --expense: #FF453A;
+  --ios-blur: blur(30px);
 }
 
 /* Global Scrollbar Hiding */
 * {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+  box-sizing: border-box;
 }
 
 *::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Webkit */
+  width: 0;
+  background: transparent;
 }
 
 /* NATIVE APP VIEWPORT FIXES */
-html, body, #root {
-  height: 100%;
-  width: 100%;
-  overflow: hidden; /* Keep this to allow Layout to handle scrolling */
-  background-color: var(--background);
-  /* Ensure content covers the whole screen including safe areas */
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); 
-  box-sizing: border-box;
-}
-
-/* Reset padding for root to handle it in specific layouts if needed, 
-   but usually for full immersive apps we want the background to bleed 
-   and content to be safe. 
-   However, the user asked to "remove black bar at top", which implies 
-   we should let the background extend into the status bar.
-*/
-html, body {
-  padding: 0; /* Let background bleed */
-}
-
-#root {
-  /* Apply safe area padding to the root container or specific pages */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+html {
+    height: 100vh;
+    width: 100vw;
+    background-color: #000;
+    overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+    box-sizing: border-box;
 }
 
 body {
-  color: var(--primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* Disable text selection for app-like feel */
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none; /* Disable magnifier/menu */
-  -webkit-tap-highlight-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #000;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    overscroll-behavior: none;
+    box-sizing: border-box;
+    -webkit-touch-callout: none;
 }
 
-/* Custom Scrollbar Handling - REMOVED (Global applied) */
+#root {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+}
 
 /* Inputs should allow selection */
 input, textarea {
@@ -74,27 +71,55 @@ input, textarea {
 
 /* Glassmorphism Utilities */
 .glass-panel {
-  background: var(--surface-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 0.5px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: var(--ios-blur);
+    -webkit-backdrop-filter: var(--ios-blur);
 }
 
+.scrolling-touch { -webkit-overflow-scrolling: touch; }
+
 /* Animations */
+@keyframes liquidOpen {
+    0% { opacity: 0; transform: scale(0.05) translate(-20px, 45px); border-radius: 80px; }
+    60% { transform: scale(1.02) translate(0, 0); border-radius: 20px; }
+    100% { opacity: 1; transform: scale(1) translate(0, 0); border-radius: 28px; }
+}
+
+@keyframes liquidClose {
+    0% { opacity: 1; transform: scale(1) translate(0, 0); border-radius: 28px; }
+    40% { border-radius: 20px; }
+    100% { opacity: 0; transform: scale(0.05) translate(-20px, 45px); border-radius: 80px; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 @keyframes slideUp {
   from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-.animate-slide-up {
-  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
+.animate-liquid-open { transform-origin: top right; animation: liquidOpen 1.6s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+.animate-liquid-close { transform-origin: top right; animation: liquidClose 1.0s cubic-bezier(0.19, 1, 0.22, 1) forwards; pointer-events: none; }
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+.animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+/* LEAFLET CUSTOMIZATIONS */
+.leaflet-container {
+    background: #111 !important;
+    font-family: 'Inter', sans-serif;
 }
-
-.animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.leaflet-control-attribution {
+    background: rgba(0,0,0,0.5) !important;
+    color: #666 !important;
+    font-size: 8px !important;
+}
+.leaflet-control-attribution a {
+    color: #666 !important;
+}
+.custom-div-icon {
+    background: transparent;
+    border: none;
 }

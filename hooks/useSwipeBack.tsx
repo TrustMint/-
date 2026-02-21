@@ -295,17 +295,13 @@ export const useSwipeBack = ({
 
 export const SwipeBackShadow: React.FC<{ progress: number }> = ({ progress }) => {
   const opacity = Math.min(SWIPE_CONFIG.SHADOW_OPACITY, progress * 1.5);
-  return React.createElement('div', {
-    style: {
-      position: 'absolute', 
-      top: 0, 
-      left: '-20px', 
-      bottom: 0, 
-      width: '20px',
-      background: 'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%)',
-      opacity, 
-      pointerEvents: 'none', 
-      zIndex: 1001,
-    }
-  });
+  return (
+    <div
+      style={{
+        position: 'absolute', top: 0, left: '-20px', bottom: 0, width: '20px',
+        background: 'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%)',
+        opacity, pointerEvents: 'none', zIndex: 1001,
+      }}
+    />
+  );
 };

@@ -10,7 +10,7 @@ export const Categories: React.FC = () => {
   const { showModal } = useModal();
 
   return (
-    <div className="space-y-6 pb-24 md:pb-0 animate-fade-in relative">
+    <div className="space-y-6 animate-fade-in relative">
       <div className="flex justify-between items-center px-1">
         <h1 className="text-3xl font-bold">Категории</h1>
         <button 

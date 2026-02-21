@@ -34,7 +34,7 @@ export const Settings: React.FC = () => {
     : 'https://ui-avatars.com/api/?name=User&background=random&size=256';
 
   return (
-    <div className="space-y-6 pb-24 md:pb-0 animate-fade-in relative">
+    <div className="space-y-6 animate-fade-in relative">
       <input 
           type="file" 
           ref={fileInputRef} 

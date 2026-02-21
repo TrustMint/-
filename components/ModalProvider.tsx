@@ -245,7 +245,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
             
             {/* Scrollable Content */}
             <div 
-                className="overflow-y-auto flex-1 modal-scroll-content px-1 pb-4 overscroll-contain relative z-10 custom-scrollbar"
+                className="overflow-y-auto flex-1 modal-scroll-content px-1 pb-4 overscroll-contain relative z-10 no-scrollbar"
                 style={{ overscrollBehaviorY: 'contain' }}
             >
               {modalContent}
