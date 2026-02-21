@@ -168,8 +168,8 @@ export const Transactions: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-24 md:pb-0 animate-fade-in relative min-h-full">
-      {/* Header */}
-      <div className="flex justify-between items-center z-20 sticky top-0 bg-black/90 backdrop-blur-xl py-4 -mx-4 px-4 md:mx-0 md:px-0">
+      {/* Header - Integrated into flow (not sticky) */}
+      <div className="flex justify-between items-center py-4 px-1">
         {/* Styled Title as requested (matching date headers) */}
         <h1 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest pl-1">
             История
@@ -232,7 +232,7 @@ export const Transactions: React.FC = () => {
       <div className="space-y-8">
         {Object.entries(groupedTransactions).map(([date, txs]) => (
           <div key={date}>
-            <h3 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest mb-3 ml-2 sticky top-20 z-10 mix-blend-difference">{date}</h3>
+            <h3 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest mb-3 ml-2 sticky top-0 z-10 mix-blend-difference py-2">{date}</h3>
             
             <div className="space-y-3">
               {txs.map((t) => {

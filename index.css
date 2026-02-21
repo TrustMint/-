@@ -60,6 +60,7 @@ body {
   /* Disable text selection for app-like feel */
   -webkit-user-select: none;
   user-select: none;
+  -webkit-touch-callout: none; /* Disable magnifier/menu */
   -webkit-tap-highlight-color: transparent;
 }
 

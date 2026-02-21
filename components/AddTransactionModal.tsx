@@ -20,11 +20,30 @@ export const AddTransactionModal: React.FC = () => {
     if (!amount) return;
 
     setSaving(true);
+    
+    // Construct date with current time if it's today, otherwise use the selected date at noon to avoid timezone shifts
+    const selectedDate = new Date(date);
+    const now = new Date();
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    
+    let finalDate = selectedDate;
+    if (isToday) {
+        finalDate = now;
+    } else {
+        // Set to current time but on the selected date to preserve relative ordering if multiple added for past date?
+        // Or just set to noon. The prompt asks for "sort by time of addition".
+        // If I add for yesterday, it should be "newer" than one added for yesterday 5 mins ago?
+        // Actually, usually "time of addition" implies the created_at timestamp.
+        // But we are sorting by `date` field in store.tsx.
+        // Let's just use the current time component for the selected date to ensure stable sort order for "just added" items.
+        finalDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+    }
+
     await addTransaction({
       amount: parseFloat(amount),
       currency: 'RUB',
       category_id: categoryId,
-      date: new Date(date).toISOString(),
+      date: finalDate.toISOString(),
       type,
       title,
       description
@@ -40,13 +59,13 @@ export const AddTransactionModal: React.FC = () => {
         {/* Type Switcher - Compact Liquid */}
         <div className="flex bg-black/20 p-1 rounded-[16px] mb-5 backdrop-blur-md">
           <button 
-            className={`flex-1 py-2 rounded-[12px] text-[13px] font-bold transition-all duration-300 ${type === 'expense' ? 'bg-[#FF453A] text-white shadow-lg scale-[1.02]' : 'text-secondary/60 hover:text-white'}`}
+            className={`flex-1 py-2 rounded-[12px] text-[13px] font-bold transition-all duration-300 ${type === 'expense' ? 'bg-[#FF453A] text-white scale-[1.02]' : 'text-secondary/60 hover:text-white'}`}
             onClick={() => setType('expense')}
           >
             Расход
           </button>
           <button 
-            className={`flex-1 py-2 rounded-[12px] text-[13px] font-bold transition-all duration-300 ${type === 'income' ? 'bg-[#30D158] text-white shadow-lg scale-[1.02]' : 'text-secondary/60 hover:text-white'}`}
+            className={`flex-1 py-2 rounded-[12px] text-[13px] font-bold transition-all duration-300 ${type === 'income' ? 'bg-[#30D158] text-white scale-[1.02]' : 'text-secondary/60 hover:text-white'}`}
             onClick={() => setType('income')}
           >
             Доход
@@ -55,7 +74,7 @@ export const AddTransactionModal: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Amount - Floating Glass */}
-          <div className="bg-gradient-to-b from-white/5 to-white/[0.02] rounded-[28px] p-4 border border-white/10 flex flex-col items-center justify-center relative overflow-hidden group shadow-inner">
+          <div className="bg-gradient-to-b from-white/5 to-white/[0.02] rounded-[28px] p-4 border border-white/10 flex flex-col items-center justify-center relative overflow-hidden group">
             <div className="flex items-center justify-center gap-1 relative z-10">
                 <input 
                     type="number" 
@@ -139,7 +158,7 @@ export const AddTransactionModal: React.FC = () => {
             <button 
                 type="submit" 
                 disabled={saving}
-                className="w-full bg-[#0A84FF] text-white py-3.5 rounded-[24px] font-bold text-[16px] shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all hover:bg-[#007AFF] disabled:opacity-50 flex items-center justify-center gap-2 border-t border-white/10"
+                className="w-full bg-[#0A84FF] text-white py-3.5 rounded-[24px] font-bold text-[16px] active:scale-[0.98] transition-all hover:bg-[#007AFF] disabled:opacity-50 flex items-center justify-center gap-2 border-t border-white/10"
             >
                 {saving ? '...' : (
                     <>
