@@ -12,11 +12,11 @@ export const DEFAULT_CATEGORIES: Category[] = [
   { id: '4', name: 'Кафе', icon: 'coffee', color: '#FF453A', type: 'expense' }, // Red
   { id: '7', name: 'Здоровье', icon: 'heart', color: '#FF375F', type: 'expense' }, // Pink
   { id: '8', name: 'Одежда', icon: 'shopping-bag', color: '#5E5CE6', type: 'expense' }, // Indigo
-  { id: '9', name: 'Связь', icon: 'smartphone', color: '#64D2FF', type: 'expense' }, // Cyan
+  { id: '9', name: 'Связь', icon: 'smartphone', color: '#64D2FF', type: 'expense' }, // Light Blue
   { id: '10', name: 'Спорт', icon: 'activity', color: '#30D158', type: 'expense' }, // Green
   { id: '11', name: 'Авто', icon: 'tool', color: '#AC8E68', type: 'expense' }, // Brown
   { id: '12', name: 'Питомцы', icon: 'github', color: '#FFD60A', type: 'expense' }, // Yellow
-  { id: '13', name: 'Образование', icon: 'book', color: '#FF9F0A', type: 'expense' }, // Orange (Repeat but different icon) -> Change to Mint?
+  { id: '13', name: 'Образование', icon: 'book', color: '#FF9500', type: 'expense' }, // Dark Orange
   { id: '14', name: 'Подарки', icon: 'gift', color: '#FF2D55', type: 'expense' }, // Red/Pink
   { id: '15', name: 'Путешествия', icon: 'map', color: '#40C8E0', type: 'expense' }, // Teal
   { id: '16', name: 'Красота', icon: 'sun', color: '#D188CF', type: 'expense' }, // Lavender

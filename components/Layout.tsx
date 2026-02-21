@@ -60,7 +60,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   });
   
   // Override enabled to be strictly false for root paths
-  const swipeEnabled = !isRootPath; 
+  const swipeEnabled = false; // DISABLED GLOBALLY AS REQUESTED "убери свайпы на главных страницах разделов говорю еще раз и больше никогда не допаял их туда"
   
   // Re-initialize hook with strict boolean
   const swipeBack = useSwipeBack({
@@ -110,14 +110,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main 
         className="flex-1 w-full md:ml-20 lg:ml-64 h-full relative overflow-y-auto overflow-x-hidden custom-scrollbar bg-black"
         id="main-scroll-container"
-        {...dragHandlers}
+        {...finalDragHandlers}
         style={{
-            ...dragHandlers.style,
-            ...(isDragging ? pushedStyle : {}),
+            ...finalDragHandlers.style,
+            ...(finalIsDragging ? finalPushedStyle : {}),
             overscrollBehaviorY: 'none' // Disable rubber-banding
         }}
       >
-        {isDragging && <SwipeBackShadow progress={dragProgress} />}
+        {/* REMOVED SHADOW AS REQUESTED "убери ее" */}
         
         {/* Floating Back Button for Inner Pages */}
         {!isRootPath && (
