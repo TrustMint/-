@@ -16,6 +16,8 @@ interface AppState {
   deleteTransaction: (id: string) => Promise<void>;
   addCategory: (c: Omit<Category, 'id'>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
+  updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -55,6 +57,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       else {
         setUser(null);
         setTransactions([]);
+        setCategories(DEFAULT_CATEGORIES);
         setLoading(false);
       }
     });
@@ -65,23 +68,39 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setLoading(true);
     const localTxs = await db.getAllTransactions();
     setTransactions(localTxs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+    
+    const localCats = await db.getAllCategories();
+    if (localCats.length > 0) setCategories(localCats);
 
     let currentUser: UserProfile = {
         id: userId,
         email: email || '',
         currency: 'RUB',
         theme: 'dark',
-        full_name: email?.split('@')[0] || 'Пользователь'
+        full_name: email?.split('@')[0] || 'Пользователь',
+        monthly_limit: 50000
     };
 
     if (navigator.onLine) {
+        // Fetch Profile
         const { data: profileData } = await supabase.from('profiles').select('*').eq('id', userId).single();
         if (profileData) currentUser = profileData as UserProfile;
         
+        // Fetch Transactions
         const { data: txData } = await supabase.from('transactions').select('*').eq('user_id', userId).order('date', { ascending: false });
         if (txData) {
             setTransactions(txData);
             txData.forEach(tx => db.putTransaction(tx));
+        }
+
+        // Fetch Categories
+        const { data: catData } = await supabase.from('categories').select('*').or(`user_id.eq.${userId},is_default.eq.true`);
+        if (catData && catData.length > 0) {
+            setCategories(catData);
+            catData.forEach(cat => db.putCategory(cat));
+        } else {
+            // Seed default categories if none exist
+            // (Optional: usually handled by DB migration or initial seed script, but here we can just use local defaults)
         }
     }
     setUser(currentUser);
@@ -121,16 +140,55 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     else await db.addToSyncQueue({ id: `del-${id}`, action: 'delete', payload: { id }, timestamp: Date.now() });
   };
 
-  // Простая реализация управления категориями (пока локально + мок)
   const addCategory = async (c: Omit<Category, 'id'>) => {
-    const newCat = { ...c, id: crypto.randomUUID() };
+    if (!session) return;
+    const newCat: Category = { ...c, id: crypto.randomUUID(), user_id: session.user.id };
     setCategories(prev => [...prev, newCat]);
-    // В реальном приложении здесь был бы запрос к Supabase
+    await db.putCategory(newCat);
+    
+    if (online) {
+        await supabase.from('categories').insert(newCat);
+    }
   };
 
   const deleteCategory = async (id: string) => {
     setCategories(prev => prev.filter(c => c.id !== id));
-    // В реальном приложении здесь был бы запрос к Supabase
+    await db.deleteCategory(id);
+    if (online) {
+        await supabase.from('categories').delete().eq('id', id);
+    }
+  };
+
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+      if (!session || !user) return;
+      const updatedUser = { ...user, ...updates };
+      setUser(updatedUser);
+      
+      if (online) {
+          await supabase.from('profiles').update(updates).eq('id', user.id);
+      }
+  };
+
+  const uploadAvatar = async (file: File) => {
+      if (!session || !user) return;
+      
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, file);
+
+      if (uploadError) {
+          throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+      await updateProfile({ avatar_url: publicUrl });
   };
 
   const signOut = async () => {
@@ -138,7 +196,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   return (
-    <AppContext.Provider value={{ session, user, transactions, categories, loading, online, addTransaction, deleteTransaction, addCategory, deleteCategory, signOut }}>
+    <AppContext.Provider value={{ session, user, transactions, categories, loading, online, addTransaction, deleteTransaction, addCategory, deleteCategory, updateProfile, uploadAvatar, signOut }}>
       {children}
     </AppContext.Provider>
   );

@@ -5,12 +5,11 @@ import { ProfileBlock, MenuRow, ProfileActionButton } from '../components/ui/Set
 import { useNavigate } from 'react-router-dom';
 
 export const Settings: React.FC = () => {
-  const { user, signOut } = useStore();
+  const { user, signOut, uploadAvatar } = useStore();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Placeholder for avatar logic
   const handleAvatarClick = () => {
       fileInputRef.current?.click();
   };
@@ -20,18 +19,22 @@ export const Settings: React.FC = () => {
       if (!file) return;
       
       setIsUploading(true);
-      // Simulate upload delay
-      setTimeout(() => {
-          setIsUploading(false);
+      try {
+          await uploadAvatar(file);
           if (fileInputRef.current) fileInputRef.current.value = '';
-          alert('Фото профиля обновлено (демо)');
-      }, 1500);
+          alert('Фото профиля обновлено');
+      } catch (error) {
+          console.error('Avatar upload failed', error);
+          alert('Ошибка загрузки фото');
+      } finally {
+          setIsUploading(false);
+      }
   };
 
   // Generate avatar initial or placeholder image
-  const avatarUrl = user?.full_name 
+  const avatarUrl = user?.avatar_url || (user?.full_name 
     ? `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name)}&background=0A84FF&color=fff&size=256` 
-    : 'https://ui-avatars.com/api/?name=User&background=random&size=256';
+    : 'https://ui-avatars.com/api/?name=User&background=random&size=256');
 
   return (
     <div className="space-y-6 animate-fade-in relative">

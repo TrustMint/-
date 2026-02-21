@@ -7,6 +7,7 @@ export interface Category {
   color: string;
   type: TransactionType | 'both';
   user_id?: string;
+  is_default?: boolean;
 }
 
 export interface Transaction {
@@ -28,4 +29,6 @@ export interface UserProfile {
   full_name?: string;
   currency: string;
   theme: 'dark' | 'light';
+  avatar_url?: string;
+  monthly_limit?: number;
 }

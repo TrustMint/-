@@ -1,11 +1,15 @@
 import { openDB, DBSchema } from 'idb';
-import { Transaction } from '../types';
+import { Transaction, Category } from '../types';
 
 interface FinTrackDB extends DBSchema {
   transactions: {
     key: string;
     value: Transaction;
     indexes: { 'by-date': string; 'synced': number };
+  };
+  categories: {
+    key: string;
+    value: Category;
   };
   syncQueue: {
     key: string;
@@ -18,13 +22,17 @@ interface FinTrackDB extends DBSchema {
   };
 }
 
-const dbPromise = openDB<FinTrackDB>('fintrack-db', 1, {
-  upgrade(db) {
-    const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
-    txStore.createIndex('by-date', 'date');
-    txStore.createIndex('synced', 'synced');
-
-    db.createObjectStore('syncQueue', { keyPath: 'id' });
+const dbPromise = openDB<FinTrackDB>('fintrack-db', 2, {
+  upgrade(db, oldVersion, newVersion, transaction) {
+    if (oldVersion < 1) {
+        const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
+        txStore.createIndex('by-date', 'date');
+        txStore.createIndex('synced', 'synced');
+        db.createObjectStore('syncQueue', { keyPath: 'id' });
+    }
+    if (oldVersion < 2) {
+        db.createObjectStore('categories', { keyPath: 'id' });
+    }
   },
 });
 
@@ -37,6 +45,15 @@ export const db = {
   },
   async deleteTransaction(id: string) {
     return (await dbPromise).delete('transactions', id);
+  },
+  async getAllCategories() {
+    return (await dbPromise).getAll('categories');
+  },
+  async putCategory(cat: Category) {
+    return (await dbPromise).put('categories', cat);
+  },
+  async deleteCategory(id: string) {
+    return (await dbPromise).delete('categories', id);
   },
   async addToSyncQueue(item: any) {
     return (await dbPromise).put('syncQueue', item);
