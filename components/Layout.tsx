@@ -62,6 +62,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const finalDragHandlers = swipeBack.dragHandlers;
   const finalPushedStyle = swipeBack.pushedStyle;
   const finalIsDragging = swipeBack.isDragging;
+  const finalIsAnimating = swipeBack.isAnimating;
   const finalDragProgress = swipeBack.dragProgress;
 
   // Animation helper
@@ -121,7 +122,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         {...finalDragHandlers}
         style={{
             ...finalDragHandlers.style,
-            ...(finalIsDragging ? finalPushedStyle : {}),
+            ...((finalIsDragging || finalIsAnimating) ? finalPushedStyle : {}),
             overscrollBehaviorY: 'none', // Disable rubber-banding
             backgroundColor: '#000000' // Ensure black background to prevent white lines
         }}
