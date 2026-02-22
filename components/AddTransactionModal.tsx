@@ -5,7 +5,7 @@ import { TransactionType } from '../types';
 import { useModal } from './ModalProvider';
 
 export const AddTransactionModal: React.FC = () => {
-  const { categories, addTransaction } = useStore();
+  const { categories, addTransaction, addCategory } = useStore();
   const { hideModal } = useModal();
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
@@ -16,6 +16,11 @@ export const AddTransactionModal: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [poppingCategory, setPoppingCategory] = useState<string | null>(null);
 
+  // Add Category State
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryColor, setNewCategoryColor] = useState('#0A84FF');
+
   // Scrubber Logic Refs
   const scrubStartX = useRef<number>(0);
   const scrubStartVal = useRef<number>(0);
@@ -25,6 +30,25 @@ export const AddTransactionModal: React.FC = () => {
       setCategoryId(id);
       setPoppingCategory(id);
       setTimeout(() => setPoppingCategory(null), 300);
+  };
+
+  const handleAddCategory = async () => {
+      if (!newCategoryName) return;
+      try {
+          const newCat = await addCategory({
+              name: newCategoryName,
+              color: newCategoryColor,
+              icon: 'tag', // Default icon
+              type: type // 'income' or 'expense' based on current tab
+          });
+          if (newCat) {
+              setCategoryId(newCat.id);
+              setShowAddCategory(false);
+              setNewCategoryName('');
+          }
+      } catch (error) {
+          console.error('Failed to add category', error);
+      }
   };
 
   // --- SCRUBBER LOGIC ---
@@ -252,8 +276,63 @@ export const AddTransactionModal: React.FC = () => {
                   </button>
                 );
               })}
+              
+              {/* Add Category Button */}
+              <button
+                type="button"
+                onClick={() => setShowAddCategory(true)}
+                className="flex items-center gap-2 px-3 py-2 rounded-full border border-white/10 bg-white/5 opacity-60 hover:opacity-100 active:scale-95 transition-all"
+              >
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center bg-white/10 text-white">
+                      <Icon name="plus" size={12} />
+                  </div>
+                  <span className="text-[11px] font-bold text-secondary">Добавить</span>
+              </button>
             </div>
           </div>
+
+          {/* Add Category Form (Inline) */}
+          {showAddCategory && (
+              <div className="bg-[#1C1C1E] rounded-[24px] p-4 border border-white/10 space-y-4 animate-fade-in">
+                  <div className="flex justify-between items-center">
+                      <h3 className="text-[15px] font-bold text-white">Новая категория</h3>
+                      <button type="button" onClick={() => setShowAddCategory(false)} className="text-secondary/50 hover:text-white">
+                          <Icon name="close" size={20} />
+                      </button>
+                  </div>
+                  
+                  <div className="space-y-3">
+                      <input 
+                          type="text" 
+                          placeholder="Название категории" 
+                          value={newCategoryName}
+                          onChange={e => setNewCategoryName(e.target.value)}
+                          className="w-full bg-black/20 rounded-xl px-4 py-3 text-white placeholder-white/20 text-[15px] focus:outline-none border border-white/5 focus:border-white/20 transition-colors"
+                      />
+                      
+                      <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                          {['#FF453A', '#FF9F0A', '#FFD60A', '#30D158', '#64D2FF', '#0A84FF', '#5E5CE6', '#BF5AF2', '#FF375F'].map(color => (
+                              <button
+                                  key={color}
+                                  type="button"
+                                  onClick={() => setNewCategoryColor(color)}
+                                  className={`w-8 h-8 rounded-full shrink-0 transition-transform ${newCategoryColor === color ? 'scale-110 ring-2 ring-white' : 'opacity-70 hover:opacity-100'}`}
+                                  style={{ backgroundColor: color }}
+                              />
+                          ))}
+                      </div>
+
+                      <button 
+                          type="button"
+                          onClick={handleAddCategory}
+                          disabled={!newCategoryName}
+                          className="w-full bg-[#0A84FF] text-white py-3 rounded-xl font-bold text-[15px] disabled:opacity-50 active:scale-95 transition-all"
+                      >
+                          Создать категорию
+                      </button>
+                  </div>
+              </div>
+          )}
 
           {/* Details Grid */}
           <div className="grid grid-cols-2 gap-3">

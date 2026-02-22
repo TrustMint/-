@@ -14,7 +14,7 @@ interface AppState {
   online: boolean;
   addTransaction: (t: Omit<Transaction, 'id' | 'user_id'>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
-  addCategory: (c: Omit<Category, 'id'>) => Promise<void>;
+  addCategory: (c: Omit<Category, 'id'>) => Promise<Category | null>;
   deleteCategory: (id: string) => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
   uploadAvatar: (file: File) => Promise<void>;
@@ -141,14 +141,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addCategory = async (c: Omit<Category, 'id'>) => {
-    if (!session) return;
+    if (!session) return null;
     const newCat: Category = { ...c, id: crypto.randomUUID(), user_id: session.user.id };
+    
+    // Optimistic update
     setCategories(prev => [...prev, newCat]);
     await db.putCategory(newCat);
     
     if (online) {
-        await supabase.from('categories').insert(newCat);
+        const { error } = await supabase.from('categories').insert(newCat);
+        if (error) {
+            console.error('Error adding category to Supabase:', error);
+            // Rollback if needed, or queue for sync
+        }
     }
+    return newCat;
   };
 
   const deleteCategory = async (id: string) => {

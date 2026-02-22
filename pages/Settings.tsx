@@ -106,15 +106,8 @@ export const Settings: React.FC = () => {
                     icon="calendar" 
                     label="Начало месяца" 
                     subLabel="1-е число" 
-                    onClick={() => {}} 
-                  />
-                  <MenuRow 
-                    color="#64D2FF" 
-                    icon="tag" 
-                    label="Категории" 
-                    subLabel="Настроить"
                     isLast
-                    onClick={() => navigate('/categories')} 
+                    onClick={() => {}} 
                   />
               </ProfileBlock>
           </div>
