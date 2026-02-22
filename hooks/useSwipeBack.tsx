@@ -271,10 +271,13 @@ export const useSwipeBack = ({
     touchAction: 'none',
     overscrollBehavior: 'none',
     zIndex: 1000,
-    // Native rounding during swipe
-    borderTopLeftRadius: (isDragging || isAnimating) ? SWIPE_CONFIG.SCREEN_CORNER_RADIUS : '0',
-    borderBottomLeftRadius: (isDragging || isAnimating) ? SWIPE_CONFIG.SCREEN_CORNER_RADIUS : '0',
-    overflow: 'hidden'
+    // Native rounding during swipe - Applied to Left Top and Left Bottom
+    borderTopLeftRadius: (isDragging || isAnimating) ? '40px' : '0',
+    borderBottomLeftRadius: (isDragging || isAnimating) ? '40px' : '0',
+    overflow: 'hidden',
+    // Ensure no white line by setting background to black explicitly
+    backgroundColor: '#000000', 
+    boxShadow: '-10px 0 30px rgba(0,0,0,0.5)' // Add subtle shadow instead of white line
   };
   
   return {

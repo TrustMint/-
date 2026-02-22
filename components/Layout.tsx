@@ -104,7 +104,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         style={{
             ...finalDragHandlers.style,
             ...(finalIsDragging ? finalPushedStyle : {}),
-            overscrollBehaviorY: 'none' // Disable rubber-banding
+            overscrollBehaviorY: 'none', // Disable rubber-banding
+            backgroundColor: '#000000' // Ensure black background to prevent white lines
         }}
       >
         {/* REMOVED SHADOW AS REQUESTED "убери ее" */}
@@ -121,7 +122,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
 
         {/* Content Wrapper with padding for bottom nav */}
-        <div className="max-w-[1200px] mx-auto px-4 pt-2 pb-[calc(84px+env(safe-area-inset-bottom)+80px)] md:p-8 md:pb-8 min-h-full">
+        <div className="max-w-[1200px] mx-auto px-4 pt-10 pb-[calc(84px+env(safe-area-inset-bottom)+20px)] md:p-8 md:pb-8 min-h-full">
           {children}
         </div>
       </main>

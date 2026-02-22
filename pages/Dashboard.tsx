@@ -51,7 +51,7 @@ export const Dashboard: React.FC = () => {
   }));
 
   return (
-    <div className="space-y-6 pt-2">
+    <div className="space-y-6">
       {/* Header: Date Only - Integrated into flow */}
       <div className="px-1">
         <p className="text-secondary/60 text-[13px] font-bold uppercase tracking-widest leading-none">
@@ -151,7 +151,7 @@ export const Dashboard: React.FC = () => {
       <div className="flex justify-between items-end px-1 pt-2">
         <h3 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest">Последние</h3>
         <button 
-            onClick={() => navigate('/transactions')} 
+            onClick={() => navigate('/transactions', { replace: true })} 
             className="text-[#0A84FF] text-[15px] font-medium active:opacity-60 transition-opacity"
         >
             Все
@@ -171,7 +171,7 @@ export const Dashboard: React.FC = () => {
                     <div 
                         key={t.id} 
                         // Optional: Navigate to transactions or show details
-                        onClick={() => navigate('/transactions')}
+                        onClick={() => navigate('/transactions', { replace: true })}
                         className="bg-[#1C1C1E] rounded-[24px] p-4 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer"
                     >
                         <div className="flex items-center gap-4">
