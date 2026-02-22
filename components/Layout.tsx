@@ -5,6 +5,7 @@ import { AddTransactionModal } from './AddTransactionModal';
 import { useModal } from './ModalProvider';
 import { LiquidNavigation } from './LiquidNavigation';
 import { useSwipeBack, SwipeBackShadow } from '../hooks/useSwipeBack';
+import { useSinglePop } from '../hooks/usePopAnimation';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -66,10 +67,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const finalDragProgress = swipeBack.dragProgress;
 
   // Animation helper
-  const [isPopping, setIsPopping] = React.useState(false);
+  const { isPopping, trigger: triggerPop } = useSinglePop();
   const handleAddClick = () => {
-      setIsPopping(true);
-      setTimeout(() => setIsPopping(false), 300);
+      triggerPop();
       handleOpenAdd();
   };
 
@@ -78,16 +78,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         className="relative w-full bg-black text-white flex flex-col md:flex-row overflow-hidden selection:bg-[#0A84FF]/30 font-sans" 
         style={{ height: '100vh', boxSizing: 'border-box' }}
     >
-      <style>{`
-        @keyframes pop-150 {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.5); }
-          100% { transform: scale(1); }
-        }
-        .animate-pop-150 {
-          animation: pop-150 0.3s ease-in-out;
-        }
-      `}</style>
       
       {/* --- DESKTOP/TABLET SIDEBAR (Left) --- */}
       <aside className="hidden md:flex flex-col w-20 lg:w-64 fixed h-full left-0 top-0 bg-[#1C1C1E]/40 backdrop-blur-2xl border-r border-white/5 z-40 pt-8 px-4 transition-all duration-300">

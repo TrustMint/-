@@ -1,20 +1,34 @@
 import React, { useState, useRef } from 'react';
 import { useStore } from '../store';
 import { Icon } from './ui/Icons';
-import { TransactionType } from '../types';
+import { TransactionType, Transaction } from '../types';
 import { useModal } from './ModalProvider';
+import { usePopAnimation, useSinglePop } from '../hooks/usePopAnimation';
 
-export const AddTransactionModal: React.FC = () => {
-  const { categories, addTransaction, addCategory, deleteCategory } = useStore();
+interface AddTransactionModalProps {
+    transaction?: Transaction;
+}
+
+export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ transaction }) => {
+  const { categories, addTransaction, updateTransaction, addCategory, deleteCategory } = useStore();
   const { hideModal } = useModal();
-  const [type, setType] = useState<TransactionType>('expense');
-  const [amount, setAmount] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [type, setType] = useState<TransactionType>(transaction?.type || 'expense');
+  const [amount, setAmount] = useState(transaction?.amount.toString() || '');
+  const [categoryId, setCategoryId] = useState(transaction?.category_id || '');
+  const [date, setDate] = useState(transaction ? new Date(transaction.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+  const [title, setTitle] = useState(transaction?.title || '');
+  const [description, setDescription] = useState(transaction?.description || '');
   const [saving, setSaving] = useState(false);
-  const [poppingCategory, setPoppingCategory] = useState<string | null>(null);
+
+  // Animations
+  const { poppingId: poppingCategory, triggerPop: triggerCategoryPop } = usePopAnimation();
+  const { poppingId: poppingColor, triggerPop: triggerColorPop } = usePopAnimation();
+  const { poppingId: poppingIcon, triggerPop: triggerIconPop } = usePopAnimation();
+  const { poppingId: poppingType, triggerPop: triggerTypePop } = usePopAnimation();
+  
+  const { isPopping: isPoppingSubmit, trigger: triggerSubmitPop } = useSinglePop();
+  const { isPopping: isPoppingScan, trigger: triggerScanPop } = useSinglePop();
+  const { isPopping: isPoppingClose, trigger: triggerClosePop } = useSinglePop();
 
   // Add Category State
   const [showAddCategory, setShowAddCategory] = useState(false);
@@ -25,6 +39,16 @@ export const AddTransactionModal: React.FC = () => {
   // Delete Category State
   const [isDeletingCategories, setIsDeletingCategories] = useState(false);
 
+  const handleColorSelect = (color: string) => {
+      setNewCategoryColor(color);
+      triggerColorPop(color);
+  };
+
+  const handleIconSelect = (icon: string) => {
+      setNewCategoryIcon(icon);
+      triggerIconPop(icon);
+  };
+
   // Scrubber Logic Refs
   const scrubStartX = useRef<number>(0);
   const scrubStartVal = useRef<number>(0);
@@ -33,8 +57,12 @@ export const AddTransactionModal: React.FC = () => {
   const handleCategoryClick = (id: string) => {
       if (isDeletingCategories) return;
       setCategoryId(id);
-      setPoppingCategory(id);
-      setTimeout(() => setPoppingCategory(null), 300);
+      triggerCategoryPop(id);
+  };
+
+  const handleTypeChange = (newType: TransactionType) => {
+      setType(newType);
+      triggerTypePop(newType);
   };
 
   const handleAddCategory = async () => {
@@ -132,32 +160,35 @@ export const AddTransactionModal: React.FC = () => {
         finalDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
     }
 
-    await addTransaction({
-      amount: parseFloat(amount),
-      currency: 'RUB',
-      category_id: categoryId,
-      date: finalDate.toISOString(),
-      type,
-      title,
-      description
-    });
+    if (transaction) {
+        await updateTransaction(transaction.id, {
+            amount: parseFloat(amount),
+            category_id: categoryId,
+            date: finalDate.toISOString(),
+            type,
+            title,
+            description
+        });
+    } else {
+        await addTransaction({
+            amount: parseFloat(amount),
+            currency: 'RUB',
+            category_id: categoryId,
+            date: finalDate.toISOString(),
+            type,
+            title,
+            description
+        });
+    }
     setSaving(false);
     hideModal();
   };
 
   return (
     <div className="px-5 pt-1">
-        <h2 className="text-lg font-bold tracking-tight mb-4 text-center text-white/90">Новая операция</h2>
+        <h2 className="text-lg font-bold tracking-tight mb-4 text-center text-white/90">{transaction ? 'Редактировать' : 'Новая операция'}</h2>
 
         <style>{`
-            @keyframes pop-150 {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.5); }
-                100% { transform: scale(1); }
-            }
-            .animate-pop-150 {
-                animation: pop-150 0.3s ease-in-out;
-            }
             /* Custom Range Slider Styling */
             input[type=range] {
                 -webkit-appearance: none;
@@ -186,20 +217,38 @@ export const AddTransactionModal: React.FC = () => {
         {/* Type Switcher - Compact Liquid */}
         <div className="flex bg-black/20 p-1 rounded-full mb-5 backdrop-blur-md">
           <button 
-            className={`flex-1 py-3 rounded-full text-[13px] font-bold transition-all duration-300 ${type === 'expense' ? 'bg-[#FF453A] text-white scale-[1.02] shadow-lg' : 'text-secondary/60 hover:text-white'}`}
-            onClick={() => setType('expense')}
+            className={`flex-1 py-3 rounded-full text-[13px] font-bold transition-all duration-300 ${type === 'expense' ? 'bg-[#FF453A] text-white scale-[1.02] shadow-lg' : 'text-secondary/60 hover:text-white'} ${poppingType === 'expense' ? 'animate-pop-150' : ''}`}
+            onClick={() => handleTypeChange('expense')}
           >
             Расход
           </button>
           <button 
-            className={`flex-1 py-3 rounded-full text-[13px] font-bold transition-all duration-300 ${type === 'income' ? 'bg-[#30D158] text-white scale-[1.02] shadow-lg' : 'text-secondary/60 hover:text-white'}`}
-            onClick={() => setType('income')}
+            className={`flex-1 py-3 rounded-full text-[13px] font-bold transition-all duration-300 ${type === 'income' ? 'bg-[#30D158] text-white scale-[1.02] shadow-lg' : 'text-secondary/60 hover:text-white'} ${poppingType === 'income' ? 'animate-pop-150' : ''}`}
+            onClick={() => handleTypeChange('income')}
           >
             Доход
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Title and Description Inputs */}
+          <div className="space-y-3">
+              <input 
+                  type="text" 
+                  placeholder="Название (необязательно)" 
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  className="w-full bg-black/20 rounded-[20px] px-5 py-3.5 text-white placeholder-white/20 text-[15px] focus:outline-none border border-white/5 focus:border-white/20 transition-colors"
+              />
+              <input 
+                  type="text" 
+                  placeholder="Комментарий (необязательно)" 
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  className="w-full bg-black/20 rounded-[20px] px-5 py-3.5 text-white placeholder-white/20 text-[15px] focus:outline-none border border-white/5 focus:border-white/20 transition-colors"
+              />
+          </div>
+
           {/* Amount - Floating Glass with Scrubber */}
           <div className="bg-gradient-to-b from-white/5 to-white/[0.02] rounded-[32px] p-6 border border-white/10 flex flex-col items-center justify-center relative overflow-hidden group shadow-2xl">
             <div className="flex items-center justify-center gap-1 relative z-10 mb-6">
@@ -341,8 +390,8 @@ export const AddTransactionModal: React.FC = () => {
                       {/* Custom Close Button (SVG Style) */}
                       <button 
                         type="button" 
-                        onClick={() => setShowAddCategory(false)} 
-                        className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white/10 transition-transform active:scale-90 hover:bg-white/20 backdrop-blur-md"
+                        onClick={() => { triggerClosePop(); setTimeout(() => setShowAddCategory(false), 150); }}
+                        className={`w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white/10 transition-transform active:scale-90 hover:bg-white/20 backdrop-blur-md ${isPoppingClose ? 'animate-pop-150' : ''}`}
                       >
                           <svg width="10" height="10" viewBox="0 0 14 14" fill="none" className="text-white/60">
                               <path d="M1 13L13 1M1 1L13 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -363,16 +412,20 @@ export const AddTransactionModal: React.FC = () => {
                       {/* Color Picker */}
                       <div className="space-y-2">
                         <label className="text-[11px] text-secondary/60 uppercase tracking-wider font-bold ml-2">Выберите цвет</label>
-                        <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar px-1">
-                            {['#FF453A', '#FF9F0A', '#FFD60A', '#30D158', '#64D2FF', '#0A84FF', '#5E5CE6', '#BF5AF2', '#FF375F', '#8E8E93'].map(color => (
+                        <div className="flex gap-3 overflow-x-auto pb-4 pt-2 custom-scrollbar px-2 -mx-2">
+                            {[
+                                '#FF453A', '#FF9F0A', '#FFD60A', '#30D158', '#64D2FF', 
+                                '#0A84FF', '#5E5CE6', '#BF5AF2', '#FF375F', '#AC8E68',
+                                '#8E8E93', '#E0E0E0', '#2C2C2E', '#48484A', '#636366'
+                            ].map(color => (
                                 <button
                                     key={color}
                                     type="button"
-                                    onClick={() => setNewCategoryColor(color)}
-                                    className={`w-10 h-10 rounded-full shrink-0 transition-transform flex items-center justify-center ${newCategoryColor === color ? 'scale-110 ring-2 ring-white' : 'opacity-70 hover:opacity-100'}`}
+                                    onClick={() => handleColorSelect(color)}
+                                    className={`w-8 h-8 rounded-full shrink-0 transition-transform flex items-center justify-center ${newCategoryColor === color ? 'ring-2 ring-white scale-110' : 'opacity-70 hover:opacity-100'} ${poppingColor === color ? 'animate-pop-150' : ''}`}
                                     style={{ backgroundColor: color }}
                                 >
-                                    {newCategoryColor === color && <Icon name="check" size={16} className="text-white mix-blend-difference" />}
+                                    {newCategoryColor === color && <Icon name="check" size={14} className="text-white mix-blend-difference" />}
                                 </button>
                             ))}
                         </div>
@@ -386,8 +439,8 @@ export const AddTransactionModal: React.FC = () => {
                                 <button
                                     key={icon}
                                     type="button"
-                                    onClick={() => setNewCategoryIcon(icon)}
-                                    className={`aspect-square rounded-full flex items-center justify-center transition-all ${newCategoryIcon === icon ? 'bg-white text-black' : 'bg-white/5 text-secondary hover:bg-white/10'}`}
+                                    onClick={() => handleIconSelect(icon)}
+                                    className={`aspect-square rounded-full flex items-center justify-center transition-all ${newCategoryIcon === icon ? 'bg-white text-black scale-110' : 'bg-white/5 text-secondary hover:bg-white/10'} ${poppingIcon === icon ? 'animate-pop-150' : ''}`}
                                 >
                                     <Icon name={icon} size={18} />
                                 </button>
@@ -409,7 +462,7 @@ export const AddTransactionModal: React.FC = () => {
 
           {/* Details Grid */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-black/20 rounded-[24px] px-5 py-4 border border-white/5 flex flex-col justify-center transition-colors focus-within:bg-black/30">
+             <div className="bg-black/20 rounded-[24px] px-5 py-4 border border-white/5 flex flex-col justify-center transition-colors focus-within:bg-black/30">
                 <label className="text-[9px] text-secondary/50 uppercase font-bold mb-1">Дата</label>
                 <input 
                     type="date" 
@@ -419,7 +472,11 @@ export const AddTransactionModal: React.FC = () => {
                     className="w-full bg-transparent text-white focus:outline-none text-[14px] font-bold font-mono" 
                 />
             </div>
-             <button type="button" className="bg-black/20 rounded-[24px] px-4 py-4 border border-white/5 flex items-center justify-center gap-2 hover:bg-black/30 transition-all active:scale-95">
+             <button 
+                type="button" 
+                onClick={triggerScanPop}
+                className={`bg-black/20 rounded-[24px] px-4 py-4 border border-white/5 flex items-center justify-center gap-2 hover:bg-black/30 transition-all active:scale-95 ${isPoppingScan ? 'animate-pop-150' : ''}`}
+             >
                 <Icon name="camera" size={18} className="text-[#0A84FF]"/>
                 <span className="text-[13px] font-bold text-white/90">Скан чека</span>
             </button>
@@ -430,7 +487,8 @@ export const AddTransactionModal: React.FC = () => {
             <button 
                 type="submit" 
                 disabled={saving}
-                className="w-full bg-[#0A84FF] text-white py-4 rounded-full font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-[#007AFF] disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30"
+                onClick={triggerSubmitPop}
+                className={`w-full bg-[#0A84FF] text-white py-4 rounded-full font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-[#007AFF] disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 ${isPoppingSubmit ? 'animate-pop-150' : ''}`}
             >
                 {saving ? '...' : (
                     <>

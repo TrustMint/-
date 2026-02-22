@@ -109,6 +109,15 @@ input, textarea {
 .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
+@keyframes pop-150 {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
+}
+.animate-pop-150 {
+    animation: pop-150 0.3s ease-in-out;
+}
+
 /* LEAFLET CUSTOMIZATIONS */
 .leaflet-container {
     background: #111 !important;

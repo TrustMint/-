@@ -4,6 +4,8 @@ import { Icon } from '../components/ui/Icons';
 import { Transaction, Category } from '../types';
 import { useModal } from '../components/ModalProvider';
 import { FilterTransactionModal, FilterOptions } from '../components/FilterTransactionModal';
+import { AddTransactionModal } from '../components/AddTransactionModal';
+import { useSinglePop } from '../hooks/usePopAnimation';
 
 // --- Компонент строки транзакции с поддержкой свайпа ---
 const SwipeableTransactionItem: React.FC<{
@@ -18,6 +20,8 @@ const SwipeableTransactionItem: React.FC<{
     const itemRef = useRef<HTMLDivElement>(null);
 
     const [isAnimating, setIsAnimating] = useState(false);
+    const { isPopping: isPoppingEdit, trigger: triggerEditPop } = useSinglePop();
+    const { isPopping: isPoppingDelete, trigger: triggerDeletePop } = useSinglePop();
 
     // Сброс состояния при клике в другом месте
     useEffect(() => {
@@ -44,11 +48,11 @@ const SwipeableTransactionItem: React.FC<{
 
         // Разрешаем тянуть только влево (отрицательный diff)
         if (diff < 0) {
-            // Add resistance (0.6 factor)
-            const resistedDiff = diff * 0.6;
+            // Stronger resistance (0.4 factor) to feel "contained"
+            const resistedDiff = diff * 0.4;
             
-            // Ограничиваем сдвиг
-            if (resistedDiff > -160) {
+            // Ограничиваем сдвиг (max 140px)
+            if (resistedDiff > -140) {
                 setOffsetX(resistedDiff);
             }
         } else if (offsetX < 0) {
@@ -76,14 +80,14 @@ const SwipeableTransactionItem: React.FC<{
             {/* Background Actions (Revealed on Swipe) */}
             <div className="absolute inset-y-0 right-0 flex items-center gap-3 pr-2 z-0">
                 <button 
-                    onClick={() => { setIsAnimating(true); setOffsetX(0); onEdit(t.id); }}
-                    className="w-12 h-12 rounded-full bg-[#0A84FF] flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform"
+                    onClick={() => { triggerEditPop(); setIsAnimating(true); setOffsetX(0); onEdit(t.id); }}
+                    className={`w-12 h-12 rounded-full bg-[#0A84FF] flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform ${isPoppingEdit ? 'animate-pop-150' : ''}`}
                 >
                     <Icon name="file-text" size={20} />
                 </button>
                 <button 
-                    onClick={() => { setIsAnimating(true); setOffsetX(0); onDelete(t.id); }}
-                    className="w-12 h-12 rounded-full bg-[#FF453A] flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform"
+                    onClick={() => { triggerDeletePop(); setIsAnimating(true); setOffsetX(0); onDelete(t.id); }}
+                    className={`w-12 h-12 rounded-full bg-[#FF453A] flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform ${isPoppingDelete ? 'animate-pop-150' : ''}`}
                 >
                     <Icon name="trash" size={20} />
                 </button>
@@ -91,8 +95,11 @@ const SwipeableTransactionItem: React.FC<{
 
             {/* Foreground Content */}
             <div 
-                className={`relative z-10 bg-[#1C1C1E] rounded-[24px] overflow-hidden touch-pan-y ${isAnimating ? 'transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]' : ''}`}
-                style={{ transform: `translateX(${offsetX}px)` }}
+                className={`relative z-10 bg-[#1C1C1E] rounded-[24px] overflow-hidden ${isAnimating ? 'transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]' : ''}`}
+                style={{ 
+                    transform: `translateX(${offsetX}px)`,
+                    touchAction: 'pan-y' // Explicitly allow vertical scroll
+                }}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -194,15 +201,16 @@ export const Transactions: React.FC = () => {
   };
 
   const handleEdit = (id: string) => {
-      // Placeholder: В реальном проекте здесь открытие модалки с данными
-      alert(`Редактирование: ${id}`);
+      const transaction = transactions.find(t => t.id === id);
+      if (transaction) {
+          showModal(<AddTransactionModal transaction={transaction} />);
+      }
   };
 
-  const [isPoppingFilter, setIsPoppingFilter] = useState(false);
+  const { isPopping: isPoppingFilter, trigger: triggerFilterPop } = useSinglePop();
 
   const openFilters = () => {
-      setIsPoppingFilter(true);
-      setTimeout(() => setIsPoppingFilter(false), 300);
+      triggerFilterPop();
       showModal(
           <FilterTransactionModal 
               categories={categories} 
@@ -216,16 +224,6 @@ export const Transactions: React.FC = () => {
 
   return (
     <div className="space-y-6 relative min-h-full">
-      <style>{`
-        @keyframes pop-150 {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.5); }
-            100% { transform: scale(1); }
-        }
-        .animate-pop-150 {
-            animation: pop-150 0.3s ease-in-out;
-        }
-      `}</style>
       
       {/* Header - Integrated into flow (not sticky) */}
       <div className="flex items-center gap-3 py-2 px-1">

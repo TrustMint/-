@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useModal } from './ModalProvider';
 import { Icon } from './ui/Icons';
 import { Category } from '../types';
+import { usePopAnimation, useSinglePop } from '../hooks/usePopAnimation';
 
 export interface FilterOptions {
     type: 'all' | 'income' | 'expense';
@@ -21,6 +22,13 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
     const [activeTypeIndex, setActiveTypeIndex] = useState(0);
     const typeRef = useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({});
+
+    // Animations
+    const { poppingId: poppingType, triggerPop: triggerTypePop } = usePopAnimation();
+    const { poppingId: poppingSort, triggerPop: triggerSortPop } = usePopAnimation();
+    const { poppingId: poppingCategory, triggerPop: triggerCategoryPop } = usePopAnimation();
+    const { isPopping: isPoppingApply, trigger: triggerApplyPop } = useSinglePop();
+    const { isPopping: isPoppingReset, trigger: triggerResetPop } = useSinglePop();
 
     const typeOptions = [
         { id: 'all', label: 'Все' },
@@ -47,42 +55,38 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
     }, [activeTypeIndex]);
 
     const handleApply = () => {
-        onApply(filters);
-        hideModal();
+        triggerApplyPop();
+        setTimeout(() => {
+            onApply(filters);
+            hideModal();
+        }, 150);
     };
 
     const handleReset = () => {
+        triggerResetPop();
         setFilters({ type: 'all', sortBy: 'date_desc', categoryId: null });
     };
 
-    const [poppingType, setPoppingType] = useState<string | null>(null);
-
     const handleTypeChange = (id: string) => {
         setFilters({ ...filters, type: id as any });
-        setPoppingType(id);
-        setTimeout(() => setPoppingType(null), 300);
+        triggerTypePop(id);
     };
 
     return (
         <div className="px-4 pt-2 pb-6 flex flex-col h-full">
-            <style>{`
-                @keyframes pop-150 {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.5); }
-                    100% { transform: scale(1); }
-                }
-                .animate-pop-150 {
-                    animation: pop-150 0.3s ease-in-out;
-                }
-            `}</style>
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
-                <button onClick={handleReset} className="text-[15px] text-secondary/60 font-medium active:text-white transition-colors">Сбросить</button>
+                <button 
+                    onClick={handleReset} 
+                    className={`text-[15px] text-secondary/60 font-medium active:text-white transition-colors ${isPoppingReset ? 'animate-pop-150' : ''}`}
+                >
+                    Сбросить
+                </button>
                 <h2 className="text-[17px] font-bold text-white">Фильтры</h2>
                 <div className="w-[70px]"></div> {/* Spacer for alignment since 'Done' is removed */}
             </div>
 
-            <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pb-20">
+            <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pb-4">
                 {/* Sort */}
                 <div className="space-y-3">
                     <h3 className="text-[13px] text-secondary/50 font-bold uppercase tracking-widest ml-1">Сортировка</h3>
@@ -93,8 +97,8 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
                         ].map((item, i, arr) => (
                             <button
                                 key={item.id}
-                                onClick={() => setFilters({ ...filters, sortBy: item.id as any })}
-                                className={`w-full flex items-center justify-between p-4 active:bg-white/5 transition-colors ${i !== arr.length - 1 ? 'border-b border-white/5' : ''}`}
+                                onClick={() => { setFilters({ ...filters, sortBy: item.id as any }); triggerSortPop(item.id); }}
+                                className={`w-full flex items-center justify-between p-4 active:bg-white/5 transition-colors ${i !== arr.length - 1 ? 'border-b border-white/5' : ''} ${poppingSort === item.id ? 'animate-pop-150' : ''}`}
                             >
                                 <div className="flex items-center gap-3">
                                     <Icon name={item.icon} size={18} className="text-secondary" />
@@ -135,16 +139,16 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
                     <h3 className="text-[13px] text-secondary/50 font-bold uppercase tracking-widest ml-1">Категория</h3>
                     <div className="flex flex-wrap gap-2">
                         <button
-                            onClick={() => setFilters({ ...filters, categoryId: null })}
-                            className={`px-4 py-2 rounded-full text-[13px] font-bold border transition-all ${filters.categoryId === null ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-secondary border-transparent active:bg-white/10'}`}
+                            onClick={() => { setFilters({ ...filters, categoryId: null }); triggerCategoryPop('all'); }}
+                            className={`px-4 py-2 rounded-full text-[13px] font-bold border transition-all ${filters.categoryId === null ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-secondary border-transparent active:bg-white/10'} ${poppingCategory === 'all' ? 'animate-pop-150' : ''}`}
                         >
                             Все
                         </button>
                         {categories.map(cat => (
                             <button
                                 key={cat.id}
-                                onClick={() => setFilters({ ...filters, categoryId: cat.id })}
-                                className={`px-4 py-2 rounded-full text-[13px] font-bold border transition-all flex items-center gap-2 ${filters.categoryId === cat.id ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-secondary border-transparent active:bg-white/10'}`}
+                                onClick={() => { setFilters({ ...filters, categoryId: cat.id }); triggerCategoryPop(cat.id); }}
+                                className={`px-4 py-2 rounded-full text-[13px] font-bold border transition-all flex items-center gap-2 ${filters.categoryId === cat.id ? 'bg-white text-black border-white' : 'bg-[#1C1C1E] text-secondary border-transparent active:bg-white/10'} ${poppingCategory === cat.id ? 'animate-pop-150' : ''}`}
                             >
                                 <span>{cat.name}</span>
                             </button>
@@ -153,11 +157,11 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
                 </div>
             </div>
 
-            {/* Apply Button - Fixed at bottom */}
-            <div className="pt-4 mt-auto">
+            {/* Apply Button - Fixed at bottom with small margin */}
+            <div className="mt-3">
                 <button 
                     onClick={handleApply}
-                    className="w-full bg-[#0A84FF] text-white py-4 rounded-[24px] font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-[#007AFF] shadow-lg shadow-blue-500/30"
+                    className={`w-full bg-[#0A84FF] text-white py-4 rounded-[24px] font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-[#007AFF] shadow-lg shadow-blue-500/30 ${isPoppingApply ? 'animate-pop-150' : ''}`}
                 >
                     Применить
                 </button>

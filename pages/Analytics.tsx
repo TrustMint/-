@@ -3,6 +3,7 @@ import { useStore } from '../store';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Sector } from 'recharts';
 import { Icon } from '../components/ui/Icons';
 import * as XLSX from 'xlsx';
+import { usePopAnimation, useSinglePop } from '../hooks/usePopAnimation';
 
 const renderActiveShape = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, value } = props;
@@ -37,6 +38,10 @@ export const Analytics: React.FC = () => {
   const { transactions, categories } = useStore();
   const [period, setPeriod] = useState<'week'|'month'|'year'>('month');
   const [activeIndex, setActiveIndex] = useState(0);
+  
+  // Animations
+  const { poppingId: poppingPeriod, triggerPop: triggerPeriodPop } = usePopAnimation();
+  const { isPopping: isPoppingExport, trigger: triggerExportPop } = useSinglePop();
   
   // Export State
   const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
@@ -121,8 +126,8 @@ export const Analytics: React.FC = () => {
             {['week', 'month', 'year'].map(p => (
                 <button 
                     key={p}
-                    onClick={() => setPeriod(p as any)}
-                    className={`px-4 py-1.5 text-xs font-bold rounded-full uppercase transition-all ${period === p ? 'bg-[#636366] text-white shadow-md' : 'text-secondary/60 hover:text-white'}`}
+                    onClick={() => { setPeriod(p as any); triggerPeriodPop(p); }}
+                    className={`px-4 py-1.5 text-xs font-bold rounded-full uppercase transition-all ${period === p ? 'bg-[#636366] text-white shadow-md' : 'text-secondary/60 hover:text-white'} ${poppingPeriod === p ? 'animate-pop-150' : ''}`}
                 >
                     {p === 'week' ? 'Нед' : p === 'month' ? 'Мес' : 'Год'}
                 </button>
@@ -258,8 +263,8 @@ export const Analytics: React.FC = () => {
               </div>
               
               <button 
-                onClick={handleExport}
-                className="w-full bg-[#32D74B] text-white py-3.5 rounded-[20px] font-bold text-[15px] active:scale-[0.98] transition-all hover:bg-[#28C840] flex items-center justify-center gap-2 shadow-lg shadow-green-500/20"
+                onClick={() => { triggerExportPop(); handleExport(); }}
+                className={`w-full bg-[#32D74B] text-white py-3.5 rounded-[20px] font-bold text-[15px] active:scale-[0.98] transition-all hover:bg-[#28C840] flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 ${isPoppingExport ? 'animate-pop-150' : ''}`}
               >
                   <Icon name="download" size={18} />
                   <span>Выгрузить</span>

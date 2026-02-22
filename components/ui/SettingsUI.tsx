@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from './Icons';
+import { useSinglePop } from '../../hooks/usePopAnimation';
 
 // Special container for the profile section - iOS Settings Style with 24px radius
 // Updated background to lighter gray (#1C1C1E)
@@ -25,6 +26,13 @@ export const MenuRow: React.FC<{
     to?: string; // For compatibility if passed, though we mostly use onClick
 }> = ({ icon, label, subLabel, onClick, isLast, destructive, color = '#FFFFFF' }) => {
     
+    const { isPopping, trigger: triggerPop } = useSinglePop();
+
+    const handleClick = () => {
+        triggerPop();
+        onClick?.();
+    };
+
     // Helper to render icon whether it's a string name or ReactNode
     const renderIcon = () => {
         if (typeof icon === 'string') {
@@ -35,8 +43,8 @@ export const MenuRow: React.FC<{
 
     return (
         <button 
-            onClick={onClick}
-            className="w-full flex items-center justify-between py-3 pr-4 pl-4 active:bg-[#2C2C2E] transition-colors group relative h-[56px]"
+            onClick={handleClick}
+            className={`w-full flex items-center justify-between py-3 pr-4 pl-4 active:bg-[#2C2C2E] transition-colors group relative h-[56px] ${isPopping ? 'animate-pop-150' : ''}`}
         >
             <div className="flex items-center gap-3.5">
                 {/* Lighter Black Square Icon Container with Glass Glare - Updated to #171717 */}
@@ -94,6 +102,13 @@ export const ProfileActionButton: React.FC<{
     icon?: React.ReactNode;
     color: string;
 }> = ({ onClick, label, icon, color }) => {
+    const { isPopping, trigger: triggerPop } = useSinglePop();
+
+    const handleClick = () => {
+        triggerPop();
+        onClick();
+    };
+
     const glassButtonStyle = {
         backgroundColor: `${color}33`,
         boxShadow: `0 20px 40px -10px ${color}33`,
@@ -101,8 +116,8 @@ export const ProfileActionButton: React.FC<{
 
     return (
         <div
-            onClick={onClick}
-            className="relative rounded-[24px] p-3.5 transition-transform duration-200 overflow-hidden cursor-pointer active:scale-[0.98] backdrop-blur-[40px]"
+            onClick={handleClick}
+            className={`relative rounded-[24px] p-3.5 transition-transform duration-200 overflow-hidden cursor-pointer active:scale-[0.98] backdrop-blur-[40px] ${isPopping ? 'animate-pop-150' : ''}`}
             style={glassButtonStyle}
         >
             {/* Top-Left Glare */}
