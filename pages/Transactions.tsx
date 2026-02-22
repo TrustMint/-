@@ -221,7 +221,7 @@ export const Transactions: React.FC = () => {
                 placeholder="Поиск по истории" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#1C1C1E] rounded-[14px] h-10 pl-10 pr-4 text-sm focus:outline-none text-white placeholder-secondary/30 transition-all focus:bg-[#2C2C2E]"
+                className="w-full bg-[#1C1C1E] rounded-full h-10 pl-10 pr-4 text-sm focus:outline-none text-white placeholder-secondary/30 transition-all focus:bg-[#2C2C2E]"
              />
              {/* Search Icon */}
              <div className="absolute left-0 top-0 w-10 h-10 flex items-center justify-center pointer-events-none text-secondary/60">
@@ -230,42 +230,64 @@ export const Transactions: React.FC = () => {
         </div>
 
         {/* Filter Button */}
-        <button 
+        <button
             onClick={openFilters}
-            className={`w-10 h-10 rounded-[14px] flex items-center justify-center transition-all duration-300 active:scale-95 ${activeFiltersCount > 0 ? 'bg-white text-black' : 'bg-[#1C1C1E] text-secondary/60 hover:text-white'}`}
+            className="pointer-events-auto rounded-full flex items-center justify-center text-white transition-transform relative active:scale-90 duration-200"
+            style={{ 
+                width: 44,
+                height: 44,
+                background: 'rgba(255, 255, 255, 0.1)', // glassStyle fallback
+                backdropFilter: 'blur(10px)',
+                borderRadius: '50%' 
+            }}
         >
-            <Icon name="filter" size={18}/>
-            {activeFiltersCount > 0 && (
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0A84FF] rounded-full border-2 border-black flex items-center justify-center">
-                    <span className="text-[9px] font-bold text-white">{activeFiltersCount}</span>
-                </div>
-            )}
+            <div className="relative z-10">
+                {activeFiltersCount > 0 ? (
+                    <div className="w-[32px] h-[32px] rounded-full bg-[#0A84FF] flex items-center justify-center text-black shadow-md">
+                        <div className="scale-75"><Icon name="sort-lines" size={20} /></div>
+                    </div>
+                ) : (
+                    <div className="text-white opacity-90">
+                        <Icon name="sort-lines" size={24} />
+                    </div>
+                )}
+            </div>
         </button>
       </div>
 
       {/* List - Separate Blocks with Swipe */}
       <div className="space-y-4">
-        {Object.entries(groupedTransactions).map(([date, txs]) => (
-          <div key={date}>
-            <h3 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest mb-1.5 ml-2 py-2">{date}</h3>
-            
-            <div className="space-y-3">
-              {txs.map((t) => {
-                const cat = categories.find(c => c.id === t.category_id) || categories[0];
+        {Object.entries(groupedTransactions).map(([date, txs]) => {
+          const dailyExpense = txs.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+          
+          return (
+            <div key={date}>
+                <h3 className="text-[13px] text-secondary/50 font-semibold uppercase tracking-widest mb-1.5 ml-2 py-2">{date}</h3>
                 
-                return (
-                    <SwipeableTransactionItem 
-                        key={t.id} 
-                        t={t} 
-                        cat={cat} 
-                        onDelete={handleDelete}
-                        onEdit={handleEdit}
-                    />
-                );
-              })}
+                <div className="space-y-3">
+                {txs.map((t) => {
+                    const cat = categories.find(c => c.id === t.category_id) || categories[0];
+                    
+                    return (
+                        <SwipeableTransactionItem 
+                            key={t.id} 
+                            t={t} 
+                            cat={cat} 
+                            onDelete={handleDelete}
+                            onEdit={handleEdit}
+                        />
+                    );
+                })}
+                </div>
+
+                {/* Daily Total Block */}
+                <div className="flex justify-between items-center px-4 py-3 mt-1 opacity-60">
+                    <span className="text-[11px] font-bold text-secondary uppercase tracking-wider">Итого расход</span>
+                    <span className="text-[13px] font-bold text-white">{dailyExpense.toLocaleString('ru-RU')} ₽</span>
+                </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         {Object.keys(groupedTransactions).length === 0 && (
             <div className="text-center py-20 opacity-50">
                 <Icon name="search" size={48} className="mx-auto mb-4 text-secondary/20"/>
