@@ -98,7 +98,7 @@ export const Analytics: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-4">
       {/* Header */}
       <div className="flex justify-between items-center px-1">
         <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none">Отчеты</h1>
