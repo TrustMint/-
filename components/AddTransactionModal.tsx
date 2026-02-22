@@ -14,6 +14,13 @@ export const AddTransactionModal: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
+  const [poppingCategory, setPoppingCategory] = useState<string | null>(null);
+
+  const handleCategoryClick = (id: string) => {
+      setCategoryId(id);
+      setPoppingCategory(id);
+      setTimeout(() => setPoppingCategory(null), 300);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +63,40 @@ export const AddTransactionModal: React.FC = () => {
     <div className="px-5 pt-1">
         <h2 className="text-lg font-bold tracking-tight mb-4 text-center text-white/90">Новая операция</h2>
 
+        <style>{`
+            @keyframes pop-150 {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.5); }
+                100% { transform: scale(1); }
+            }
+            .animate-pop-150 {
+                animation: pop-150 0.3s ease-in-out;
+            }
+            /* Custom Range Slider Styling */
+            input[type=range] {
+                -webkit-appearance: none;
+                width: 100%;
+                background: transparent;
+            }
+            input[type=range]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                height: 28px;
+                width: 28px;
+                border-radius: 50%;
+                background: #ffffff;
+                cursor: pointer;
+                margin-top: -12px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            }
+            input[type=range]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 4px;
+                cursor: pointer;
+                background: rgba(255,255,255,0.2);
+                border-radius: 2px;
+            }
+        `}</style>
+
         {/* Type Switcher - Compact Liquid */}
         <div className="flex bg-black/20 p-1 rounded-full mb-5 backdrop-blur-md">
           <button 
@@ -73,9 +114,9 @@ export const AddTransactionModal: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Amount - Floating Glass */}
+          {/* Amount - Floating Glass with Scrubber */}
           <div className="bg-gradient-to-b from-white/5 to-white/[0.02] rounded-[32px] p-6 border border-white/10 flex flex-col items-center justify-center relative overflow-hidden group shadow-2xl">
-            <div className="flex items-center justify-center gap-1 relative z-10">
+            <div className="flex items-center justify-center gap-1 relative z-10 mb-4">
                 <input 
                     type="number" 
                     value={amount}
@@ -87,7 +128,21 @@ export const AddTransactionModal: React.FC = () => {
                 />
                 <span className="text-3xl font-bold text-secondary/50 absolute -right-8 top-1/2 -translate-y-1/2">₽</span>
             </div>
-            <p className="text-[11px] text-secondary/40 font-bold uppercase tracking-widest mt-2">Сумма</p>
+            
+            {/* iOS Style Scrubber */}
+            <div className="w-full px-4 relative z-10">
+                <input 
+                    type="range" 
+                    min="0" 
+                    max="50000" 
+                    step="100"
+                    value={amount || 0}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full"
+                />
+            </div>
+
+            <p className="text-[11px] text-secondary/40 font-bold uppercase tracking-widest mt-4">Сумма</p>
           </div>
 
           {/* Category Selector - Colorful Chips */}
@@ -98,14 +153,17 @@ export const AddTransactionModal: React.FC = () => {
             <div className="flex flex-wrap gap-2 justify-start">
               {categories.filter(c => c.type === 'both' || c.type === type).map(cat => {
                 const isSelected = categoryId === cat.id;
+                const isPopping = poppingCategory === cat.id;
+                
                 return (
                   <button
                     key={cat.id}
                     type="button"
-                    onClick={() => setCategoryId(cat.id)}
+                    onClick={() => handleCategoryClick(cat.id)}
                     className={`
-                      flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200 active:scale-95
-                      ${isSelected ? 'brightness-110 shadow-lg scale-[1.02] border-white/20' : 'opacity-60 hover:opacity-80 border-transparent bg-white/5'}
+                      flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200
+                      ${isSelected ? 'brightness-110 shadow-lg border-white/20' : 'opacity-60 hover:opacity-80 border-transparent bg-white/5'}
+                      ${isPopping ? 'animate-pop-150' : 'active:scale-95'}
                     `}
                     style={{
                         // Only apply color when selected, otherwise use neutral dim style

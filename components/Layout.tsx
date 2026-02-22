@@ -64,11 +64,29 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const finalIsDragging = swipeBack.isDragging;
   const finalDragProgress = swipeBack.dragProgress;
 
+  // Animation helper
+  const [isPopping, setIsPopping] = React.useState(false);
+  const handleAddClick = () => {
+      setIsPopping(true);
+      setTimeout(() => setIsPopping(false), 300);
+      handleOpenAdd();
+  };
+
   return (
     <div 
         className="relative w-full bg-black text-white flex flex-col md:flex-row overflow-hidden selection:bg-[#0A84FF]/30 font-sans" 
         style={{ height: '100vh', boxSizing: 'border-box' }}
     >
+      <style>{`
+        @keyframes pop-150 {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.5); }
+          100% { transform: scale(1); }
+        }
+        .animate-pop-150 {
+          animation: pop-150 0.3s ease-in-out;
+        }
+      `}</style>
       
       {/* --- DESKTOP/TABLET SIDEBAR (Left) --- */}
       <aside className="hidden md:flex flex-col w-20 lg:w-64 fixed h-full left-0 top-0 bg-[#1C1C1E]/40 backdrop-blur-2xl border-r border-white/5 z-40 pt-8 px-4 transition-all duration-300">
@@ -88,8 +106,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </nav>
 
         <button
-          onClick={handleOpenAdd}
-          className="mb-8 w-full bg-[#0A84FF] hover:bg-[#007AFF] text-white p-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+          onClick={handleAddClick}
+          className={`mb-8 w-full bg-[#0A84FF] hover:bg-[#007AFF] text-white p-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20 ${isPopping ? 'animate-pop-150' : 'active:scale-95'}`}
         >
           <Icon name="plus" size={24} />
           <span className="font-semibold hidden lg:block">Новая операция</span>

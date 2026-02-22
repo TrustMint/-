@@ -178,11 +178,7 @@ export const Transactions: React.FC = () => {
   return (
     <div className="space-y-6 relative min-h-full">
       {/* Header - Integrated into flow (not sticky) */}
-      <div className="flex justify-between items-center py-2 px-1">
-        {/* Styled Title as requested (matching date headers) */}
-        <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none">
-            История
-        </h1>
+      <div className="flex justify-end items-center py-2 px-1">
         
         <div className="flex gap-3 relative">
             <div className={`relative transition-all duration-300 ${searchTerm ? 'w-48' : 'w-10'}`}>

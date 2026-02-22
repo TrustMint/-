@@ -42,13 +42,29 @@ export const Analytics: React.FC = () => {
   const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // KPI Calculations
-  const income = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-  const expense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+  // Filter Transactions by Period
+  const filteredTransactions = React.useMemo(() => {
+      const now = new Date();
+      let start = new Date();
+      
+      if (period === 'week') {
+          start.setDate(now.getDate() - 7);
+      } else if (period === 'month') {
+          start = new Date(now.getFullYear(), now.getMonth(), 1);
+      } else if (period === 'year') {
+          start = new Date(now.getFullYear(), 0, 1);
+      }
+      
+      return transactions.filter(t => new Date(t.date) >= start);
+  }, [transactions, period]);
+
+  // KPI Calculations (Based on Filtered Data)
+  const income = filteredTransactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+  const expense = filteredTransactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
   const saved = income - expense;
 
-  // Pie Data
-  const expenseByCategory = transactions
+  // Pie Data (Based on Filtered Data)
+  const expenseByCategory = filteredTransactions
     .filter(t => t.type === 'expense')
     .reduce((acc, t) => { acc[t.category_id] = (acc[t.category_id] || 0) + t.amount; return acc; }, {} as Record<string, number>);
   
@@ -100,8 +116,7 @@ export const Analytics: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center px-1">
-        <h1 className="text-[26px] text-secondary/50 font-bold uppercase tracking-widest pl-1 leading-none">Отчеты</h1>
+      <div className="flex justify-end items-center px-1">
         <div className="flex bg-[#1C1C1E] p-1 rounded-full">
             {['week', 'month', 'year'].map(p => (
                 <button 
@@ -154,8 +169,8 @@ export const Analytics: React.FC = () => {
                         data={pieData}
                         cx="50%"
                         cy="50%"
-                        innerRadius={60}
-                        outerRadius={90}
+                        innerRadius={80} // Increased inner radius for text
+                        outerRadius={110}
                         paddingAngle={4}
                         dataKey="value"
                         onClick={onPieEnter}
@@ -179,9 +194,10 @@ export const Analytics: React.FC = () => {
                 </PieChart>
             </ResponsiveContainer>
             
-            {/* Inner 3D Depth Effect Ring */}
-             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-[120px] h-[120px] rounded-full border-[8px] border-[#2C2C2E] shadow-[inset_0_4px_10px_rgba(0,0,0,0.5)] opacity-50"></div>
+            {/* Center Text: Total Expense */}
+             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-[11px] text-secondary/50 font-bold uppercase tracking-widest mb-1">Всего</span>
+                <span className="text-2xl font-bold text-white">{expense.toLocaleString()} ₽</span>
             </div>
          </div>
 

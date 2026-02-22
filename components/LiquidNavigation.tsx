@@ -64,14 +64,32 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
         )
     }
 
+    const [isPopping, setIsPopping] = React.useState(false);
+    const handleAddClick = () => {
+        setIsPopping(true);
+        setTimeout(() => setIsPopping(false), 300);
+        triggerHaptic();
+        onOpenAdd();
+    };
+
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
+            <style>{`
+                @keyframes pop-150 {
+                  0% { transform: scale(1); }
+                  50% { transform: scale(1.5); }
+                  100% { transform: scale(1); }
+                }
+                .animate-pop-150 {
+                  animation: pop-150 0.3s ease-in-out;
+                }
+            `}</style>
             
             {/* Floating Add Button - Positioned above nav */}
             <div className="absolute bottom-[calc(84px+env(safe-area-inset-bottom)+16px)] right-4 pointer-events-auto z-[101]">
                 <button
-                    onClick={() => { triggerHaptic(); onOpenAdd(); }}
-                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.5)] active:scale-90 transition-transform duration-300 backdrop-blur-xl"
+                    onClick={handleAddClick}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition-transform duration-300 backdrop-blur-xl ${isPopping ? 'animate-pop-150' : 'active:scale-90'}`}
                     style={{
                         background: 'rgba(20, 20, 20, 0.4)', // Matching nav panel glass
                         backdropFilter: 'blur(5px)',
