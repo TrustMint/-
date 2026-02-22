@@ -89,7 +89,7 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none flex justify-center pb-[calc(env(safe-area-inset-bottom)+16px)]">
             
             {/* Floating Add Button - Positioned above nav */}
-            <div className="absolute bottom-[calc(72px+env(safe-area-inset-bottom)+24px)] right-4 pointer-events-auto z-[101]">
+            <div className="absolute bottom-[calc(88px+env(safe-area-inset-bottom)+24px)] right-4 pointer-events-auto z-[101]">
                 <button
                     onClick={handleAddClick}
                     className={`w-14 h-14 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition-transform duration-300 backdrop-blur-xl ${isPopping ? 'animate-pop-150' : 'active:scale-90'}`}
@@ -105,30 +105,30 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                 </button>
             </div>
 
-            {/* Floating Capsule Container */}
+            {/* Floating Capsule Container - Restored Glass Style & Increased Size */}
             <div
                 ref={navRef}
                 className="w-[92%] max-w-[400px] pointer-events-auto relative overflow-hidden"
                 style={{
-                    height: '64px',
-                    borderRadius: '32px',
-                    backgroundColor: 'rgba(28, 28, 30, 0.6)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                    height: '96px', // Increased size
+                    borderRadius: '48px', // Increased radius
+                    backgroundColor: 'rgba(20, 20, 20, 0.4)', // Restored previous glass
+                    backdropFilter: 'blur(5px)', // Restored previous blur
+                    WebkitBackdropFilter: 'blur(5px)',
+                    border: '0.5px solid rgba(255, 255, 255, 0.1)', // Restored previous border
+                    boxShadow: '0 -10px 40px rgba(0,0,0,0.6)', // Restored previous shadow
                 }}
             >
                 {/* Active Pill Indicator */}
                 <div 
-                    className="absolute top-1 bottom-1 bg-[#636366]/50 rounded-[28px] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] shadow-inner"
+                    className="absolute top-1 bottom-1 bg-[#636366] rounded-[44px] shadow-md transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
                     style={{
                         left: activeRect.left + 4,
                         width: activeRect.width - 8,
                     }}
                 />
 
-                <div className="flex items-center justify-around h-full px-1">
+                <div className="flex items-center justify-around h-full px-1 relative z-10">
                     <NavItem path="/" icon="dashboard" label="Главная" />
                     <NavItem path="/transactions" icon="list" label="История" />
                     <NavItem path="/analytics" icon="chart" label="Отчеты" />
