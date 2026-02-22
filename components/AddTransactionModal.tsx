@@ -9,7 +9,7 @@ export const AddTransactionModal: React.FC = () => {
   const { hideModal } = useModal();
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
-  const [categoryId, setCategoryId] = useState(categories[0].id);
+  const [categoryId, setCategoryId] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -17,7 +17,7 @@ export const AddTransactionModal: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount) return;
+    if (!amount || !categoryId) return; // Require category selection
 
     setSaving(true);
     
@@ -105,22 +105,22 @@ export const AddTransactionModal: React.FC = () => {
                     onClick={() => setCategoryId(cat.id)}
                     className={`
                       flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200 active:scale-95
-                      ${isSelected ? 'brightness-110 shadow-lg scale-[1.02] border-white/20' : 'opacity-100 hover:opacity-90 border-transparent'}
+                      ${isSelected ? 'brightness-110 shadow-lg scale-[1.02] border-white/20' : 'opacity-60 hover:opacity-80 border-transparent bg-white/5'}
                     `}
                     style={{
-                        // Always colored, slightly transparent when not selected
-                        backgroundColor: isSelected ? cat.color : `${cat.color}50`, 
+                        // Only apply color when selected, otherwise use neutral dim style
+                        backgroundColor: isSelected ? cat.color : undefined, 
                     }}
                   >
                     <div className="w-5 h-5 rounded-full flex items-center justify-center shadow-sm shrink-0" 
                          style={{ 
-                             backgroundColor: 'rgba(255,255,255,0.2)',
+                             backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
                              color: 'white'
                          }}>
                       <Icon name={cat.icon} size={12} />
                     </div>
                     <span 
-                        className="text-[11px] font-bold leading-none whitespace-nowrap text-white"
+                        className={`text-[11px] font-bold leading-none whitespace-nowrap ${isSelected ? 'text-white' : 'text-secondary'}`}
                     >
                         {cat.name}
                     </span>

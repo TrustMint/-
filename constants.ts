@@ -15,7 +15,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
   { id: '9', name: 'Связь', icon: 'smartphone', color: '#64D2FF', type: 'expense' }, // Light Blue
   { id: '10', name: 'Спорт', icon: 'activity', color: '#30D158', type: 'expense' }, // Green
   { id: '11', name: 'Авто', icon: 'tool', color: '#AC8E68', type: 'expense' }, // Brown
-  { id: '12', name: 'Питомцы', icon: 'github', color: '#FFD60A', type: 'expense' }, // Yellow
+  { id: '12', name: 'Питомцы', icon: 'github', color: '#E0A800', type: 'expense' }, // Dark Yellow (Distinct from #FFD60A)
   { id: '13', name: 'Образование', icon: 'book', color: '#FF9500', type: 'expense' }, // Dark Orange
   { id: '14', name: 'Подарки', icon: 'gift', color: '#FF2D55', type: 'expense' }, // Red/Pink
   { id: '15', name: 'Путешествия', icon: 'map', color: '#40C8E0', type: 'expense' }, // Teal

@@ -51,7 +51,7 @@ export const Dashboard: React.FC = () => {
   }));
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="space-y-3">
       {/* Header: Date Only - Integrated into flow */}
       <div className="px-1">
         <p className="text-secondary/60 text-[13px] font-bold uppercase tracking-widest leading-none">
