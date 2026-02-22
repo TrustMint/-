@@ -34,7 +34,8 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
     };
 
     const navRef = useRef<HTMLDivElement>(null);
-    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+    const scaleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [indicatorStyle, setIndicatorStyle] = useState({});
 
     const tabs = [
         { path: '/', icon: 'dashboard', label: 'Главная' },
@@ -48,26 +49,43 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
             if (!navRef.current) return;
             const index = tabs.findIndex(t => t.path === currentPath);
             if (index === -1) {
-                setPillStyle(prev => ({ ...prev, opacity: 0 }));
+                setIndicatorStyle({ opacity: 0 });
                 return;
             }
 
-            const navWidth = navRef.current.offsetWidth;
-            const tabWidth = navWidth / tabs.length;
+            const buttons = navRef.current.querySelectorAll('.nav-tab-btn');
+            const activeButton = buttons[index] as HTMLElement;
             
-            // Calculate pill width (e.g., 80% of tab width, max 80px)
-            const pillWidth = Math.min(tabWidth * 0.8, 80);
-            // Center the pill within the tab
-            const leftOffset = (index * tabWidth) + (tabWidth - pillWidth) / 2;
+            if (activeButton) {
+                // We want the pill to be slightly smaller than the full tab width (e.g. 88px max)
+                // But centered within the tab.
+                const tabWidth = activeButton.offsetWidth;
+                const pillWidth = Math.min(tabWidth * 0.85, 88);
+                const offsetWithinTab = (tabWidth - pillWidth) / 2;
+                
+                if (scaleTimeoutRef.current) clearTimeout(scaleTimeoutRef.current);
 
-            setPillStyle({
-                left: leftOffset,
-                width: pillWidth,
-                opacity: 1
-            });
+                // First, set the new position and scale up
+                setIndicatorStyle(prev => ({
+                    ...prev,
+                    width: pillWidth,
+                    transform: `translateX(${activeButton.offsetLeft + offsetWithinTab}px) scale(1.15)`,
+                    opacity: 1,
+                }));
+
+                // Then, scale back down after the slide animation is mostly complete
+                scaleTimeoutRef.current = setTimeout(() => {
+                    setIndicatorStyle({
+                        width: pillWidth,
+                        transform: `translateX(${activeButton.offsetLeft + offsetWithinTab}px) scale(1)`,
+                        opacity: 1,
+                    });
+                }, 150);
+            }
         };
 
-        updatePillPosition();
+        // Small timeout to ensure DOM is fully rendered before calculating widths
+        setTimeout(updatePillPosition, 10);
         window.addEventListener('resize', updatePillPosition);
         return () => window.removeEventListener('resize', updatePillPosition);
     }, [currentPath, tabs]);
@@ -102,10 +120,10 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
             {/* Floating Capsule Container */}
             <div
                 ref={navRef}
-                className="w-[92%] max-w-[400px] pointer-events-auto relative overflow-hidden"
+                className="w-[90%] max-w-[380px] pointer-events-auto relative overflow-hidden"
                 style={{
-                    height: '76px', // Decreased size
-                    borderRadius: '38px', // Adjusted radius
+                    height: '76px',
+                    borderRadius: '38px',
                     backgroundColor: 'rgba(20, 20, 20, 0.4)',
                     backdropFilter: 'blur(5px)',
                     WebkitBackdropFilter: 'blur(5px)',
@@ -113,13 +131,16 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                     boxShadow: '0 -10px 40px rgba(0,0,0,0.6)',
                 }}
             >
-                {/* Active Pill Indicator (Sliding Background) */}
+                {/* Active Pill Indicator (Matte Glass) */}
                 <div 
-                    className="absolute top-2 bottom-2 bg-[#0A84FF]/10 rounded-full transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                    className="absolute top-2 bottom-2 rounded-full transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
                     style={{
-                        left: pillStyle.left,
-                        width: pillStyle.width,
-                        opacity: pillStyle.opacity,
+                        ...indicatorStyle,
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                     }}
                 />
 
@@ -130,21 +151,21 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                             <button
                                 key={tab.path}
                                 onClick={() => handleNavigate(tab.path)}
-                                className="flex-1 flex flex-col items-center justify-center h-full relative group z-10"
+                                className="nav-tab-btn flex-1 flex flex-col items-center justify-center h-full relative group z-10"
                                 style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                             >
                                 {/* Icon Container */}
                                 <div 
-                                    className={`transition-all duration-300 ease-out mb-0.5 ${
+                                    className={`transition-all duration-300 ease-out flex items-center justify-center ${
                                         isActive ? 'text-[#0A84FF] scale-110' : 'text-white/40'
                                     }`}
                                 >
-                                    <Icon name={tab.icon} size={20} />
+                                    <Icon name={tab.icon} size={22} />
                                 </div>
                                 
                                 {/* Label */}
                                 <span 
-                                    className={`text-[9px] font-bold tracking-wide transition-colors duration-300 ${
+                                    className={`text-[10px] font-bold tracking-wide transition-colors duration-300 mt-1 ${
                                         isActive ? 'text-[#0A84FF]' : 'text-white/40'
                                     }`}
                                 >

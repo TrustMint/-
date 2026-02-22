@@ -10,6 +10,23 @@ interface ExportModalProps {
 export const ExportModal: React.FC<ExportModalProps> = ({ fileUrl, fileName }) => {
     const { hideModal } = useModal();
 
+    const handleDownload = (e: React.MouseEvent) => {
+        e.preventDefault();
+        
+        // Programmatically trigger download
+        const a = document.createElement('a');
+        a.href = fileUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        // Close modal after a short delay
+        setTimeout(() => {
+            hideModal();
+        }, 100);
+    };
+
     return (
         <div className="p-6 flex flex-col items-center">
             <div className="w-20 h-20 bg-[#1C1C1E] rounded-3xl flex items-center justify-center mb-6 shadow-xl border border-white/10">
@@ -33,15 +50,13 @@ export const ExportModal: React.FC<ExportModalProps> = ({ fileUrl, fileName }) =
             </div>
 
             <div className="w-full flex flex-col gap-3">
-                <a
-                    href={fileUrl}
-                    download={fileName}
-                    onClick={hideModal}
+                <button
+                    onClick={handleDownload}
                     className="w-full bg-[#30D158] text-white font-bold text-[17px] py-4 rounded-full flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-lg shadow-green-500/20"
                 >
                     <Icon name="download" size={20} />
                     <span>Скачать файл</span>
-                </a>
+                </button>
                 <button
                     onClick={hideModal}
                     className="w-full bg-[#2C2C2E] text-white font-bold text-[17px] py-4 rounded-full active:scale-[0.98] transition-transform"

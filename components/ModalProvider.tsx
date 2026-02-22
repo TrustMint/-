@@ -188,8 +188,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
             fixed inset-0 z-[1000]
             flex items-end justify-center sm:items-center
             transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]
-            ${isVisible ? 'bg-black/60' : 'bg-transparent pointer-events-none'}
-            backdrop-blur-[2px]
+            ${isVisible ? 'bg-black/60 backdrop-blur-[2px]' : 'bg-transparent backdrop-blur-none pointer-events-none'}
           `}
           style={{ touchAction: 'none' }} 
         >
