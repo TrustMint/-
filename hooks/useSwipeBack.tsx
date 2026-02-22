@@ -272,12 +272,14 @@ export const useSwipeBack = ({
     overscrollBehavior: 'none',
     zIndex: 1000,
     // Native rounding during swipe - Applied to Left Top and Left Bottom
-    borderTopLeftRadius: (isDragging || isAnimating) ? '40px' : '0',
-    borderBottomLeftRadius: (isDragging || isAnimating) ? '40px' : '0',
+    borderTopLeftRadius: (isDragging || isAnimating) ? '48px' : '0',
+    borderBottomLeftRadius: (isDragging || isAnimating) ? '48px' : '0',
     overflow: 'hidden',
     // Ensure no white line by setting background to black explicitly
     backgroundColor: '#000000', 
-    boxShadow: '-10px 0 30px rgba(0,0,0,0.5)' // Add subtle shadow instead of white line
+    // Subtle border to define the card against the black background
+    borderLeft: (isDragging || isAnimating) ? '1px solid rgba(255,255,255,0.1)' : 'none',
+    boxShadow: '-20px 0 60px rgba(0,0,0,0.6)' // Deep shadow for depth
   };
   
   return {
