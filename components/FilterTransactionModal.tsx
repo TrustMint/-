@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useModal } from './ModalProvider';
 import { Icon } from './ui/Icons';
 import { Category } from '../types';
 
 export interface FilterOptions {
     type: 'all' | 'income' | 'expense';
-    sortBy: 'date_desc' | 'date_asc' | 'amount_desc' | 'amount_asc';
+    sortBy: 'date_desc' | 'date_asc';
     categoryId: string | null; // null for all
 }
 
@@ -18,6 +18,33 @@ interface FilterModalProps {
 export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories, currentFilters, onApply }) => {
     const { hideModal } = useModal();
     const [filters, setFilters] = useState<FilterOptions>(currentFilters);
+    const [activeTypeIndex, setActiveTypeIndex] = useState(0);
+    const typeRef = useRef<HTMLDivElement>(null);
+    const [indicatorStyle, setIndicatorStyle] = useState({});
+
+    const typeOptions = [
+        { id: 'all', label: 'Все' },
+        { id: 'expense', label: 'Расход' },
+        { id: 'income', label: 'Доход' },
+    ];
+
+    useEffect(() => {
+        const index = typeOptions.findIndex(opt => opt.id === filters.type);
+        setActiveTypeIndex(index !== -1 ? index : 0);
+    }, [filters.type]);
+
+    useEffect(() => {
+        if (typeRef.current) {
+            const buttons = typeRef.current.querySelectorAll('button');
+            const activeButton = buttons[activeTypeIndex];
+            if (activeButton) {
+                setIndicatorStyle({
+                    width: activeButton.offsetWidth,
+                    transform: `translateX(${activeButton.offsetLeft}px)`,
+                });
+            }
+        }
+    }, [activeTypeIndex]);
 
     const handleApply = () => {
         onApply(filters);
@@ -29,24 +56,22 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
     };
 
     return (
-        <div className="px-4 pt-2 pb-6">
+        <div className="px-4 pt-2 pb-6 flex flex-col h-full">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <button onClick={handleReset} className="text-[15px] text-secondary/60 font-medium active:text-white transition-colors">Сбросить</button>
                 <h2 className="text-[17px] font-bold text-white">Фильтры</h2>
-                <button onClick={handleApply} className="text-[15px] text-[#0A84FF] font-bold active:opacity-70 transition-opacity">Готово</button>
+                <div className="w-[70px]"></div> {/* Spacer for alignment since 'Done' is removed */}
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pb-20">
                 {/* Sort */}
                 <div className="space-y-3">
                     <h3 className="text-[13px] text-secondary/50 font-bold uppercase tracking-widest ml-1">Сортировка</h3>
-                    <div className="bg-[#1C1C1E] rounded-[14px] overflow-hidden">
+                    <div className="bg-[#1C1C1E] rounded-[24px] overflow-hidden">
                         {[
                             { id: 'date_desc', label: 'Сначала новые', icon: 'calendar' },
                             { id: 'date_asc', label: 'Сначала старые', icon: 'calendar' },
-                            { id: 'amount_desc', label: 'По убыванию суммы', icon: 'trending-down' },
-                            { id: 'amount_asc', label: 'По возрастанию суммы', icon: 'trending-up' },
                         ].map((item, i, arr) => (
                             <button
                                 key={item.id}
@@ -63,23 +88,27 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
                     </div>
                 </div>
 
-                {/* Type */}
+                {/* Type - Liquid Glass Switcher */}
                 <div className="space-y-3">
                     <h3 className="text-[13px] text-secondary/50 font-bold uppercase tracking-widest ml-1">Тип операции</h3>
-                    <div className="bg-[#1C1C1E] p-1 rounded-[14px] flex">
-                        {[
-                            { id: 'all', label: 'Все' },
-                            { id: 'expense', label: 'Расход' },
-                            { id: 'income', label: 'Доход' },
-                        ].map((item) => (
-                            <button
-                                key={item.id}
-                                onClick={() => setFilters({ ...filters, type: item.id as any })}
-                                className={`flex-1 py-2 rounded-[10px] text-[13px] font-bold transition-all ${filters.type === item.id ? 'bg-[#636366] text-white shadow-md' : 'text-secondary/60'}`}
-                            >
-                                {item.label}
-                            </button>
-                        ))}
+                    <div className="bg-[#1C1C1E] p-1 rounded-[24px] relative" ref={typeRef}>
+                        {/* Liquid Indicator */}
+                        <div 
+                            className="absolute top-1 bottom-1 bg-[#636366] rounded-[20px] shadow-md transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                            style={indicatorStyle}
+                        />
+                        
+                        <div className="flex relative z-10">
+                            {typeOptions.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => setFilters({ ...filters, type: item.id as any })}
+                                    className={`flex-1 py-3 rounded-[20px] text-[13px] font-bold transition-colors duration-200 ${filters.type === item.id ? 'text-white' : 'text-secondary/60'}`}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
@@ -104,6 +133,16 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
                         ))}
                     </div>
                 </div>
+            </div>
+
+            {/* Apply Button - Fixed at bottom */}
+            <div className="pt-4 mt-auto">
+                <button 
+                    onClick={handleApply}
+                    className="w-full bg-[#0A84FF] text-white py-4 rounded-[24px] font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-[#007AFF] shadow-lg shadow-blue-500/30"
+                >
+                    Применить
+                </button>
             </div>
         </div>
     );

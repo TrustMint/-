@@ -141,7 +141,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
 
         {/* Content Wrapper with padding for bottom nav */}
-        <div className="max-w-[1200px] mx-auto px-4 pt-24 pb-[calc(84px+env(safe-area-inset-bottom)+20px)] md:p-8 md:pb-8 min-h-full">
+        <div className="max-w-[1200px] mx-auto px-4 pt-24 pb-[calc(84px+env(safe-area-inset-bottom)+60px)] md:p-8 md:pb-8 min-h-full">
           {children}
         </div>
       </main>

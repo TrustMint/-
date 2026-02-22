@@ -253,7 +253,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
             
             {/* Scrollable Content - Full Height, Padding for safe areas */}
             <div 
-                className="h-full w-full overflow-y-auto modal-scroll-content px-1 pt-12 pb-[env(safe-area-inset-bottom)] overscroll-contain relative z-10 no-scrollbar"
+                className="h-full w-full overflow-y-auto modal-scroll-content px-1 pt-12 pb-[env(safe-area-inset-bottom)] overscroll-contain relative z-10 no-scrollbar flex flex-col"
                 style={{ overscrollBehaviorY: 'contain' }}
             >
               {modalContent}
