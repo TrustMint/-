@@ -5,7 +5,7 @@ import { TransactionType } from '../types';
 import { useModal } from './ModalProvider';
 
 export const AddTransactionModal: React.FC = () => {
-  const { categories, addTransaction, addCategory } = useStore();
+  const { categories, addTransaction, addCategory, deleteCategory } = useStore();
   const { hideModal } = useModal();
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
@@ -20,6 +20,10 @@ export const AddTransactionModal: React.FC = () => {
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryColor, setNewCategoryColor] = useState('#0A84FF');
+  const [newCategoryIcon, setNewCategoryIcon] = useState('tag');
+  
+  // Delete Category State
+  const [isDeletingCategories, setIsDeletingCategories] = useState(false);
 
   // Scrubber Logic Refs
   const scrubStartX = useRef<number>(0);
@@ -27,6 +31,7 @@ export const AddTransactionModal: React.FC = () => {
   const [isScrubbing, setIsScrubbing] = useState(false);
 
   const handleCategoryClick = (id: string) => {
+      if (isDeletingCategories) return;
       setCategoryId(id);
       setPoppingCategory(id);
       setTimeout(() => setPoppingCategory(null), 300);
@@ -38,16 +43,26 @@ export const AddTransactionModal: React.FC = () => {
           const newCat = await addCategory({
               name: newCategoryName,
               color: newCategoryColor,
-              icon: 'tag', // Default icon
+              icon: newCategoryIcon,
               type: type // 'income' or 'expense' based on current tab
           });
           if (newCat) {
               setCategoryId(newCat.id);
               setShowAddCategory(false);
               setNewCategoryName('');
+              setNewCategoryIcon('tag');
+              setNewCategoryColor('#0A84FF');
           }
       } catch (error) {
           console.error('Failed to add category', error);
+      }
+  };
+
+  const handleDeleteCategory = async (id: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (window.confirm('Удалить эту категорию?')) {
+          await deleteCategory(id);
+          if (categoryId === id) setCategoryId('');
       }
   };
 
@@ -252,9 +267,10 @@ export const AddTransactionModal: React.FC = () => {
                     type="button"
                     onClick={() => handleCategoryClick(cat.id)}
                     className={`
-                      flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200
+                      relative flex items-center gap-2 px-3 py-2 rounded-full border transition-all duration-200
                       ${isSelected ? 'brightness-110 shadow-lg border-white/20' : 'opacity-60 hover:opacity-80 border-transparent bg-white/5'}
                       ${isPopping ? 'animate-pop-150' : 'active:scale-95'}
+                      ${isDeletingCategories ? 'animate-shake' : ''}
                     `}
                     style={{
                         // Only apply color when selected, otherwise use neutral dim style
@@ -273,6 +289,18 @@ export const AddTransactionModal: React.FC = () => {
                     >
                         {cat.name}
                     </span>
+
+                    {/* Delete Badge */}
+                    {isDeletingCategories && (
+                        <div 
+                            className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#FF453A] rounded-full flex items-center justify-center shadow-sm z-10 border border-[#1C1C1E]"
+                            onClick={(e) => handleDeleteCategory(cat.id, e)}
+                        >
+                            <svg width="8" height="8" viewBox="0 0 14 14" fill="none" className="text-white">
+                                <path d="M1 13L13 1M1 1L13 13" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </div>
+                    )}
                   </button>
                 );
               })}
@@ -280,7 +308,7 @@ export const AddTransactionModal: React.FC = () => {
               {/* Add Category Button */}
               <button
                 type="button"
-                onClick={() => setShowAddCategory(true)}
+                onClick={() => { setShowAddCategory(true); setIsDeletingCategories(false); }}
                 className="flex items-center gap-2 px-3 py-2 rounded-full border border-white/10 bg-white/5 opacity-60 hover:opacity-100 active:scale-95 transition-all"
               >
                   <div className="w-5 h-5 rounded-full flex items-center justify-center bg-white/10 text-white">
@@ -288,45 +316,90 @@ export const AddTransactionModal: React.FC = () => {
                   </div>
                   <span className="text-[11px] font-bold text-secondary">Добавить</span>
               </button>
+
+              {/* Delete Category Toggle */}
+              <button
+                type="button"
+                onClick={() => setIsDeletingCategories(!isDeletingCategories)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-full border border-white/10 bg-white/5 hover:opacity-100 active:scale-95 transition-all ${isDeletingCategories ? 'opacity-100 bg-red-500/20 border-red-500/50' : 'opacity-60'}`}
+              >
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isDeletingCategories ? 'bg-red-500 text-white' : 'bg-white/10 text-white'}`}>
+                      <Icon name={isDeletingCategories ? "check" : "trash"} size={10} />
+                  </div>
+                  <span className={`text-[11px] font-bold ${isDeletingCategories ? 'text-red-400' : 'text-secondary'}`}>
+                      {isDeletingCategories ? 'Готово' : 'Удалить'}
+                  </span>
+              </button>
             </div>
           </div>
 
           {/* Add Category Form (Inline) */}
           {showAddCategory && (
-              <div className="bg-[#1C1C1E] rounded-[24px] p-4 border border-white/10 space-y-4 animate-fade-in">
-                  <div className="flex justify-between items-center">
-                      <h3 className="text-[15px] font-bold text-white">Новая категория</h3>
-                      <button type="button" onClick={() => setShowAddCategory(false)} className="text-secondary/50 hover:text-white">
-                          <Icon name="close" size={20} />
+              <div className="bg-[#1C1C1E] rounded-[32px] p-5 border border-white/10 space-y-5 animate-fade-in relative">
+                  <div className="flex justify-between items-center px-1">
+                      <h3 className="text-[17px] font-bold text-white">Новая категория</h3>
+                      {/* Custom Close Button (SVG Style) */}
+                      <button 
+                        type="button" 
+                        onClick={() => setShowAddCategory(false)} 
+                        className="w-[28px] h-[28px] flex items-center justify-center rounded-full bg-white/10 transition-transform active:scale-90 hover:bg-white/20 backdrop-blur-md"
+                      >
+                          <svg width="10" height="10" viewBox="0 0 14 14" fill="none" className="text-white/60">
+                              <path d="M1 13L13 1M1 1L13 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
                       </button>
                   </div>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-5">
+                      {/* Name Input */}
                       <input 
                           type="text" 
                           placeholder="Название категории" 
                           value={newCategoryName}
                           onChange={e => setNewCategoryName(e.target.value)}
-                          className="w-full bg-black/20 rounded-xl px-4 py-3 text-white placeholder-white/20 text-[15px] focus:outline-none border border-white/5 focus:border-white/20 transition-colors"
+                          className="w-full bg-black/20 rounded-full px-5 py-4 text-white placeholder-white/20 text-[15px] focus:outline-none border border-white/5 focus:border-white/20 transition-colors"
                       />
                       
-                      <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-                          {['#FF453A', '#FF9F0A', '#FFD60A', '#30D158', '#64D2FF', '#0A84FF', '#5E5CE6', '#BF5AF2', '#FF375F'].map(color => (
-                              <button
-                                  key={color}
-                                  type="button"
-                                  onClick={() => setNewCategoryColor(color)}
-                                  className={`w-8 h-8 rounded-full shrink-0 transition-transform ${newCategoryColor === color ? 'scale-110 ring-2 ring-white' : 'opacity-70 hover:opacity-100'}`}
-                                  style={{ backgroundColor: color }}
-                              />
-                          ))}
+                      {/* Color Picker */}
+                      <div className="space-y-2">
+                        <label className="text-[11px] text-secondary/60 uppercase tracking-wider font-bold ml-2">Выберите цвет</label>
+                        <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar px-1">
+                            {['#FF453A', '#FF9F0A', '#FFD60A', '#30D158', '#64D2FF', '#0A84FF', '#5E5CE6', '#BF5AF2', '#FF375F', '#8E8E93'].map(color => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => setNewCategoryColor(color)}
+                                    className={`w-10 h-10 rounded-full shrink-0 transition-transform flex items-center justify-center ${newCategoryColor === color ? 'scale-110 ring-2 ring-white' : 'opacity-70 hover:opacity-100'}`}
+                                    style={{ backgroundColor: color }}
+                                >
+                                    {newCategoryColor === color && <Icon name="check" size={16} className="text-white mix-blend-difference" />}
+                                </button>
+                            ))}
+                        </div>
+                      </div>
+
+                      {/* Icon Picker */}
+                      <div className="space-y-2">
+                        <label className="text-[11px] text-secondary/60 uppercase tracking-wider font-bold ml-2">Выберите значок</label>
+                        <div className="grid grid-cols-6 gap-2">
+                            {['tag', 'shopping-cart', 'car', 'home', 'coffee', 'briefcase', 'laptop', 'gift', 'smartphone', 'music', 'shopping-bag', 'user', 'star', 'map', 'credit-card', 'bell', 'camera', 'file-text'].map(icon => (
+                                <button
+                                    key={icon}
+                                    type="button"
+                                    onClick={() => setNewCategoryIcon(icon)}
+                                    className={`aspect-square rounded-full flex items-center justify-center transition-all ${newCategoryIcon === icon ? 'bg-white text-black' : 'bg-white/5 text-secondary hover:bg-white/10'}`}
+                                >
+                                    <Icon name={icon} size={18} />
+                                </button>
+                            ))}
+                        </div>
                       </div>
 
                       <button 
                           type="button"
                           onClick={handleAddCategory}
                           disabled={!newCategoryName}
-                          className="w-full bg-[#0A84FF] text-white py-3 rounded-xl font-bold text-[15px] disabled:opacity-50 active:scale-95 transition-all"
+                          className="w-full bg-[#0A84FF] text-white py-4 rounded-full font-bold text-[17px] disabled:opacity-50 active:scale-95 transition-all shadow-lg shadow-blue-500/30"
                       >
                           Создать категорию
                       </button>
