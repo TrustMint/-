@@ -114,6 +114,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         if (item.action === 'create') {
             const { error } = await supabase.from('transactions').insert(item.payload);
             if (!error) await db.removeFromSyncQueue(item.id);
+        } else if (item.action === 'update') {
+            const { error } = await supabase.from('transactions').update(item.payload).eq('id', item.payload.id);
+            if (!error) await db.removeFromSyncQueue(item.id);
         } else if (item.action === 'delete') {
             const { error } = await supabase.from('transactions').delete().eq('id', item.payload.id);
             if (!error) await db.removeFromSyncQueue(item.id);
@@ -136,12 +139,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const updateTransaction = async (id: string, updates: Partial<Transaction>) => {
     setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-    await db.putTransaction({ ...transactions.find(t => t.id === id)!, ...updates });
+    const updatedTx = { ...transactions.find(t => t.id === id)!, ...updates };
+    await db.putTransaction(updatedTx);
     if (online) {
         await supabase.from('transactions').update(updates).eq('id', id);
     } else {
-        // Queue update for sync
-        // Simplified: just re-queue create or add update action (not implemented fully in this snippet but good enough for now)
+        await db.addToSyncQueue({ id: `upd-${id}-${Date.now()}`, action: 'update', payload: updatedTx, timestamp: Date.now() });
     }
   };
 

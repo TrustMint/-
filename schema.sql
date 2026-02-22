@@ -73,18 +73,35 @@ using (auth.uid() = user_id);
 
 -- Insert Default Categories
 INSERT INTO public.categories (name, icon, color, type, is_default) VALUES
+('Продукты', 'shopping-cart', '#FF9F0A', 'expense', true),
+('Транспорт', 'car', '#0A84FF', 'expense', true),
+('Жилье', 'home', '#BF5AF2', 'expense', true),
 ('Кафе', 'coffee', '#FF453A', 'expense', true),
+('Здоровье', 'heart', '#FF375F', 'expense', true),
 ('Одежда', 'shopping-bag', '#5E5CE6', 'expense', true),
 ('Связь', 'smartphone', '#64D2FF', 'expense', true),
 ('Спорт', 'activity', '#30D158', 'expense', true),
 ('Авто', 'tool', '#AC8E68', 'expense', true),
-('Питомцы', 'github', '#FFD60A', 'expense', true),
-('Путешествия', 'map', '#0A84FF', 'expense', true),
-('Красота', 'sun', '#BF5AF2', 'expense', true),
-('Техника', 'monitor', '#64D2FF', 'expense', true),
+('Питомцы', 'github', '#E0A800', 'expense', true),
+('Образование', 'book', '#FF9500', 'expense', true),
+('Подарки', 'gift', '#FF2D55', 'expense', true),
+('Путешествия', 'map', '#40C8E0', 'expense', true),
+('Красота', 'sun', '#D188CF', 'expense', true),
+('Техника', 'monitor', '#8E8E93', 'expense', true),
+('Развлечения', 'music', '#FF2D55', 'expense', true),
+('Семья', 'user', '#BF5AF2', 'expense', true),
+('Подписки', 'credit-card', '#5E5CE6', 'expense', true),
+('Разное', 'list', '#8E8E93', 'expense', true),
+('Зарплата', 'briefcase', '#32D74B', 'income', true),
 ('Фриланс', 'laptop', '#64D2FF', 'income', true),
-('Инвестиции', 'trending-up', '#30D158', 'income', true),
-('Кэшбэк', 'percent', '#FF9F0A', 'income', true)
+('Инвестиции', 'trending-up', '#30B0C7', 'income', true),
+('Подарки', 'gift', '#FFD60A', 'income', true),
+('Кэшбэк', 'percent', '#FF9F0A', 'income', true),
+('Бизнес', 'briefcase', '#BF5AF2', 'income', true),
+('Аренда', 'home', '#0A84FF', 'income', true),
+('Продажа', 'tag', '#FF375F', 'income', true),
+('Пособия', 'shield', '#5E5CE6', 'income', true),
+('Разное', 'list', '#8E8E93', 'income', true)
 ON CONFLICT (name, type) WHERE is_default = true DO NOTHING;
 
 -- 3. Transactions Table

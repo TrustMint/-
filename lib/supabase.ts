@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Fallback values for environments where import.meta.env is undefined or variables are missing
-const FALLBACK_URL = 'https://nmjtzeukcvykqhrdawbd.supabase.co';
-const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tanR6ZXVrY3Z5a3FocmRhd2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1MjUzNjAsImV4cCI6MjA4NzEwMTM2MH0.4tKa_UlGDDfK4r2SZ7Ac1f1WnGGSxF6yoo2vNYnOidg';
+const FALLBACK_URL = 'https://bdspdcaeznbqiepmbrsx.supabase.co';
+const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkc3BkY2Flem5icWllcG1icnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3ODUzNTQsImV4cCI6MjA4NzM2MTM1NH0.Hr-eSvia09CGFOGWT3Qhuug7XPgBYYRQpnjIJ_ntlMY';
 
 const getEnv = (key: string, fallback: string) => {
   try {
