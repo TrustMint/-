@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useStore } from '../store';
 import { Icon } from './ui/Icons';
 import { TransactionType } from '../types';
@@ -16,10 +16,57 @@ export const AddTransactionModal: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [poppingCategory, setPoppingCategory] = useState<string | null>(null);
 
+  // Scrubber Logic Refs
+  const scrubStartX = useRef<number>(0);
+  const scrubStartVal = useRef<number>(0);
+  const [isScrubbing, setIsScrubbing] = useState(false);
+
   const handleCategoryClick = (id: string) => {
       setCategoryId(id);
       setPoppingCategory(id);
       setTimeout(() => setPoppingCategory(null), 300);
+  };
+
+  // --- SCRUBBER LOGIC ---
+  const handleScrubStart = (e: React.TouchEvent | React.MouseEvent) => {
+      // e.stopPropagation(); // Removed to allow modal scroll if needed, but usually scrubber captures it
+      const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+      scrubStartX.current = clientX;
+      const currentAmount = parseFloat(amount || '0');
+      scrubStartVal.current = currentAmount;
+      setIsScrubbing(true);
+      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+  };
+
+  const handleScrubMove = (e: React.TouchEvent | React.MouseEvent) => {
+      if (!isScrubbing) return;
+      // e.stopPropagation();
+      const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+      const delta = clientX - scrubStartX.current;
+      
+      const stepValue = 10; // Adjust step value as needed
+      const pxPerStep = 2;
+      
+      const steps = Math.floor(delta / pxPerStep);
+      let newAmount = scrubStartVal.current + (steps * stepValue);
+      
+      if (newAmount < 0) newAmount = 0;
+      // Round to nearest 10 or keep decimal? The prompt example rounds to 10.
+      // Let's keep it somewhat flexible but clean.
+      newAmount = Math.round(newAmount / 10) * 10;
+
+      const currentAmount = parseFloat(amount || '0');
+      if (newAmount !== currentAmount) {
+          setAmount(newAmount.toString());
+          if (typeof navigator !== 'undefined' && navigator.vibrate && Math.abs(steps) % 5 === 0) {
+               navigator.vibrate(5);
+          }
+      }
+  };
+
+  const handleScrubEnd = (e: React.TouchEvent | React.MouseEvent) => {
+      // e.stopPropagation();
+      setIsScrubbing(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,33 +163,53 @@ export const AddTransactionModal: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Amount - Floating Glass with Scrubber */}
           <div className="bg-gradient-to-b from-white/5 to-white/[0.02] rounded-[32px] p-6 border border-white/10 flex flex-col items-center justify-center relative overflow-hidden group shadow-2xl">
-            <div className="flex items-center justify-center gap-1 relative z-10 mb-4">
+            <div className="flex items-center justify-center gap-1 relative z-10 mb-6">
                 <input 
                     type="number" 
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     placeholder="0"
                     autoFocus
-                    className="bg-transparent border-none text-[48px] font-extrabold text-white placeholder-white/10 focus:outline-none focus:ring-0 text-center w-full max-w-[240px]"
+                    className="bg-transparent border-none text-[64px] font-extrabold text-white placeholder-white/10 focus:outline-none focus:ring-0 text-center w-full max-w-[280px] leading-none tracking-tighter"
                     step="0.01"
                 />
-                <span className="text-3xl font-bold text-secondary/50 absolute -right-8 top-1/2 -translate-y-1/2">₽</span>
+                <span className="text-3xl font-bold text-secondary/50 absolute -right-6 top-1/2 -translate-y-1/2">₽</span>
             </div>
             
             {/* iOS Style Scrubber */}
-            <div className="w-full px-4 relative z-10">
-                <input 
-                    type="range" 
-                    min="0" 
-                    max="50000" 
-                    step="100"
-                    value={amount || 0}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full"
-                />
-            </div>
+            <div className="w-full px-2 relative z-10">
+                <div 
+                    className="relative w-full h-14 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-none select-none transition-transform active:scale-95 overflow-hidden"
+                    style={{
+                        background: 'linear-gradient(90deg, rgba(10, 132, 255, 0.15) 0%, rgba(191, 90, 242, 0.15) 100%)',
+                        boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.1), 0 0 20px rgba(10, 132, 255, 0.1)',
+                        border: '1px solid rgba(255,255,255,0.1)'
+                    }}
+                    onTouchStart={handleScrubStart}
+                    onTouchMove={handleScrubMove}
+                    onTouchEnd={handleScrubEnd}
+                    onMouseDown={handleScrubStart}
+                    onMouseMove={handleScrubMove}
+                    onMouseUp={handleScrubEnd}
+                    onMouseLeave={handleScrubEnd}
+                >
+                    <div className="absolute left-4 text-[#0A84FF]"><Icon name="chevron-left" size={20} /></div>
+                    
+                    {/* Colorful Ticks */}
+                    <div className="flex gap-1.5 items-center">
+                        <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[#0A84FF] to-[#BF5AF2] opacity-60"></div>
+                        <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#0A84FF] to-[#BF5AF2]"></div>
+                        <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[#0A84FF] to-[#BF5AF2] opacity-60"></div>
+                    </div>
 
-            <p className="text-[11px] text-secondary/40 font-bold uppercase tracking-widest mt-4">Сумма</p>
+                    <div className="absolute right-4 text-[#BF5AF2]"><Icon name="chevron-right" size={20} /></div>
+                    
+                    {isScrubbing && (
+                        <div className="absolute inset-0 rounded-full bg-white/10 animate-pulse pointer-events-none border border-white/20"></div>
+                    )}
+                </div>
+                <p className="text-center text-[11px] text-secondary/40 mt-3 font-medium">Свайп для точной настройки</p>
+            </div>
           </div>
 
           {/* Category Selector - Colorful Chips */}

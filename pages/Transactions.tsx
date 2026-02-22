@@ -2,6 +2,8 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useStore } from '../store';
 import { Icon } from '../components/ui/Icons';
 import { Transaction, Category } from '../types';
+import { useModal } from '../components/ModalProvider';
+import { FilterTransactionModal, FilterOptions } from '../components/FilterTransactionModal';
 
 // --- Компонент строки транзакции с поддержкой свайпа ---
 const SwipeableTransactionItem: React.FC<{
@@ -128,24 +130,45 @@ const SwipeableTransactionItem: React.FC<{
 
 export const Transactions: React.FC = () => {
   const { transactions, categories, deleteTransaction } = useStore();
-  const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
+  const { showModal } = useModal();
   const [searchTerm, setSearchTerm] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  
+  const [filters, setFilters] = useState<FilterOptions>({
+      type: 'all',
+      sortBy: 'date_desc',
+      categoryId: null
+  });
 
   // Group transactions by date
   const groupedTransactions = useMemo(() => {
-    let filtered = transactions;
+    let filtered = [...transactions];
     
-    if (filterType !== 'all') {
-      filtered = filtered.filter(t => t.type === filterType);
+    // 1. Filter by Type
+    if (filters.type !== 'all') {
+      filtered = filtered.filter(t => t.type === filters.type);
+    }
+
+    // 2. Filter by Category
+    if (filters.categoryId) {
+        filtered = filtered.filter(t => t.category_id === filters.categoryId);
     }
     
+    // 3. Search
     if (searchTerm) {
         filtered = filtered.filter(t => 
             t.description?.toLowerCase().includes(searchTerm.toLowerCase()) || 
             categories.find(c => c.id === t.category_id)?.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }
+
+    // 4. Sort
+    filtered.sort((a, b) => {
+        if (filters.sortBy === 'date_desc') return new Date(b.date).getTime() - new Date(a.date).getTime();
+        if (filters.sortBy === 'date_asc') return new Date(a.date).getTime() - new Date(b.date).getTime();
+        if (filters.sortBy === 'amount_desc') return b.amount - a.amount;
+        if (filters.sortBy === 'amount_asc') return a.amount - b.amount;
+        return 0;
+    });
 
     const groups: Record<string, Transaction[]> = {};
     const today = new Date().toLocaleDateString('ru-RU');
@@ -162,7 +185,7 @@ export const Transactions: React.FC = () => {
       groups[dateKey].push(t);
     });
     return groups;
-  }, [transactions, filterType, searchTerm]);
+  }, [transactions, filters, searchTerm, categories]);
 
   const handleDelete = (id: string) => {
     if(window.confirm('Удалить операцию?')) {
@@ -175,62 +198,49 @@ export const Transactions: React.FC = () => {
       alert(`Редактирование: ${id}`);
   };
 
+  const openFilters = () => {
+      showModal(
+          <FilterTransactionModal 
+              categories={categories} 
+              currentFilters={filters} 
+              onApply={setFilters} 
+          />
+      );
+  };
+
+  const activeFiltersCount = (filters.type !== 'all' ? 1 : 0) + (filters.categoryId ? 1 : 0) + (filters.sortBy !== 'date_desc' ? 1 : 0);
+
   return (
     <div className="space-y-6 relative min-h-full">
       {/* Header - Integrated into flow (not sticky) */}
-      <div className="flex justify-end items-center py-2 px-1">
-        
-        <div className="flex gap-3 relative">
-            <div className={`relative transition-all duration-300 ${searchTerm ? 'w-48' : 'w-10'}`}>
-                 <input 
-                    type="text" 
-                    placeholder="Поиск" 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`
-                        bg-[#1C1C1E] rounded-full h-10 text-sm focus:outline-none transition-all duration-300 text-white placeholder-secondary/30
-                        ${searchTerm ? 'w-full pl-10 pr-4' : 'w-10 pl-10 cursor-pointer bg-transparent'}
-                    `}
-                    // Hack to make it expandable on focus if needed, or just relying on state
-                 />
-                 {/* Search Icon / Circle */}
-                 <div className={`absolute left-0 top-0 w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center pointer-events-none transition-colors ${searchTerm ? 'text-white' : 'text-secondary/60'}`}>
-                    <Icon name="search" size={18} />
-                 </div>
-            </div>
-
-            {/* Filter Button */}
-            <div className="relative">
-                <button 
-                    onClick={() => setShowFilters(!showFilters)}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${showFilters ? 'bg-white text-black' : 'bg-[#1C1C1E] text-secondary/60 hover:text-white'}`}
-                >
-                    <Icon name="filter" size={18}/>
-                </button>
-
-                {/* Oil-like Filter Menu */}
-                <div 
-                    className={`
-                        absolute right-0 top-12 min-w-[160px] bg-[#1C1C1E] rounded-[20px] p-2 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] border border-white/10 origin-top-right z-50
-                        transition-all duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275)
-                        ${showFilters ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 -translate-y-4 pointer-events-none'}
-                    `}
-                >
-                    <div className="space-y-1">
-                        {(['all', 'expense', 'income'] as const).map(ft => (
-                            <button
-                                key={ft}
-                                onClick={() => { setFilterType(ft); setShowFilters(false); }}
-                                className={`w-full text-left px-4 py-3 rounded-[14px] text-xs font-bold uppercase tracking-wide transition-colors flex items-center justify-between ${filterType === ft ? 'bg-white text-black' : 'text-secondary/60 hover:bg-white/5 hover:text-white'}`}
-                            >
-                                <span>{ft === 'all' ? 'Все' : ft === 'expense' ? 'Расходы' : 'Доходы'}</span>
-                                {filterType === ft && <Icon name="check" size={14} />}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
+      <div className="flex items-center gap-3 py-2 px-1">
+        {/* Search Bar - Full Width */}
+        <div className="relative flex-1 transition-all duration-300">
+             <input 
+                type="text" 
+                placeholder="Поиск по истории" 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-[#1C1C1E] rounded-[14px] h-10 pl-10 pr-4 text-sm focus:outline-none text-white placeholder-secondary/30 transition-all focus:bg-[#2C2C2E]"
+             />
+             {/* Search Icon */}
+             <div className="absolute left-0 top-0 w-10 h-10 flex items-center justify-center pointer-events-none text-secondary/60">
+                <Icon name="search" size={18} />
+             </div>
         </div>
+
+        {/* Filter Button */}
+        <button 
+            onClick={openFilters}
+            className={`w-10 h-10 rounded-[14px] flex items-center justify-center transition-all duration-300 active:scale-95 ${activeFiltersCount > 0 ? 'bg-white text-black' : 'bg-[#1C1C1E] text-secondary/60 hover:text-white'}`}
+        >
+            <Icon name="filter" size={18}/>
+            {activeFiltersCount > 0 && (
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0A84FF] rounded-full border-2 border-black flex items-center justify-center">
+                    <span className="text-[9px] font-bold text-white">{activeFiltersCount}</span>
+                </div>
+            )}
+        </button>
       </div>
 
       {/* List - Separate Blocks with Swipe */}
