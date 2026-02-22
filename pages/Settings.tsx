@@ -3,10 +3,13 @@ import { useStore } from '../store';
 import { Icon } from '../components/ui/Icons';
 import { ProfileBlock, MenuRow, ProfileActionButton } from '../components/ui/SettingsUI';
 import { useNavigate } from 'react-router-dom';
+import { useModal } from '../components/ModalProvider';
+import { LimitModal } from '../components/LimitModal';
 
 export const Settings: React.FC = () => {
   const { user, signOut, uploadAvatar } = useStore();
   const navigate = useNavigate();
+  const { showModal } = useModal();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -106,8 +109,15 @@ export const Settings: React.FC = () => {
                     icon="calendar" 
                     label="Начало месяца" 
                     subLabel="1-е число" 
-                    isLast
                     onClick={() => {}} 
+                  />
+                  <MenuRow 
+                    color="#FF453A" 
+                    icon="trending-down" 
+                    label="Лимит на месяц" 
+                    subLabel={`${user?.monthly_limit?.toLocaleString('ru-RU') || 0} ₽`} 
+                    isLast
+                    onClick={() => showModal(<LimitModal />)} 
                   />
               </ProfileBlock>
           </div>

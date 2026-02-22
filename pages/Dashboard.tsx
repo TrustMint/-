@@ -5,13 +5,18 @@ import { Icon } from '../components/ui/Icons';
 import { ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts';
 
 export const Dashboard: React.FC = () => {
-  const { transactions, categories } = useStore();
+  const { transactions, categories, user, updateProfile } = useStore();
   const navigate = useNavigate();
 
   // --- Monthly Limit Logic ---
-  const [limit, setLimit] = useState(() => Number(localStorage.getItem('monthly_limit')) || 50000);
+  const limit = user?.monthly_limit || 50000;
   const [isEditingLimit, setIsEditingLimit] = useState(false);
   const [tempLimit, setTempLimit] = useState(limit.toString());
+
+  // Update tempLimit when limit changes from store
+  useEffect(() => {
+      setTempLimit(limit.toString());
+  }, [limit]);
 
   // Calculate expenses for current month
   const currentMonth = new Date().getMonth();
@@ -27,11 +32,10 @@ export const Dashboard: React.FC = () => {
   const remaining = limit - monthlyExpenses;
   const progress = Math.min(100, Math.max(0, (monthlyExpenses / limit) * 100));
 
-  const saveLimit = () => {
+  const saveLimit = async () => {
       const val = parseFloat(tempLimit);
       if (!isNaN(val) && val > 0) {
-          setLimit(val);
-          localStorage.setItem('monthly_limit', val.toString());
+          await updateProfile({ monthly_limit: val });
       }
       setIsEditingLimit(false);
   };
@@ -113,10 +117,10 @@ export const Dashboard: React.FC = () => {
                     type="number" 
                     value={tempLimit}
                     onChange={(e) => setTempLimit(e.target.value)}
-                    className="flex-1 bg-[#2C2C2E] rounded-[12px] px-3 py-2 text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#0A84FF]"
+                    className="flex-1 bg-[#2C2C2E] rounded-full px-4 py-2 text-white text-[15px] focus:outline-none focus:ring-1 focus:ring-[#0A84FF]"
                     autoFocus
                   />
-                  <button onClick={saveLimit} className="bg-[#0A84FF] text-white px-4 rounded-[12px] text-sm font-medium">OK</button>
+                  <button onClick={saveLimit} className="bg-[#0A84FF] text-white px-5 rounded-full text-[15px] font-medium active:scale-95 transition-transform">OK</button>
               </div>
           ) : (
             <>
