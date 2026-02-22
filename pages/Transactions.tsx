@@ -75,6 +75,8 @@ const SwipeableTransactionItem: React.FC<{
         }
     };
 
+    const timeString = new Date(t.date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
     return (
         <div className="relative mb-3 group" ref={itemRef}>
             {/* Background Actions (Revealed on Swipe) */}
@@ -116,11 +118,17 @@ const SwipeableTransactionItem: React.FC<{
                         
                         <div>
                             <p className="font-semibold text-[15px] text-secondary leading-snug">{(t as any).title || cat?.name}</p>
-                            {t.description && (
-                                <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
-                                    {t.description}
-                                </p>
-                            )}
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="text-[12px] text-secondary/40 font-medium font-mono tracking-tight">{timeString}</span>
+                                {t.description && (
+                                    <>
+                                        <span className="text-[12px] text-secondary/30">•</span>
+                                        <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
+                                            {t.description}
+                                        </p>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
 

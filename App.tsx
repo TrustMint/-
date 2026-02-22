@@ -17,7 +17,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   if (loading) {
     return (
         <div className="min-h-screen flex items-center justify-center text-primary bg-black">
-            <div className="animate-spin text-[#0A84FF]"><Icon name="dashboard" size={32} /></div>
+            <div className="animate-spin text-[#0A84FF]"><Icon name="dollar" size={32} /></div>
         </div>
     );
   }
