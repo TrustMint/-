@@ -4,6 +4,8 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Sector } from 'recha
 import { Icon } from '../components/ui/Icons';
 import * as XLSX from 'xlsx';
 import { usePopAnimation, useSinglePop } from '../hooks/usePopAnimation';
+import { useModal } from '../components/ModalProvider';
+import { ExportModal } from '../components/ExportModal';
 
 const renderActiveShape = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, value } = props;
@@ -36,6 +38,7 @@ const renderActiveShape = (props: any) => {
 
 export const Analytics: React.FC = () => {
   const { transactions, categories } = useStore();
+  const { showModal } = useModal();
   const [period, setPeriod] = useState<'week'|'month'|'year'>('month');
   const [activeIndex, setActiveIndex] = useState(0);
   
@@ -98,8 +101,10 @@ export const Analytics: React.FC = () => {
 
       const data = filtered.map(t => ({
           'Дата': new Date(t.date).toLocaleDateString('ru-RU'),
+          'Время': new Date(t.date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
           'Тип': t.type === 'income' ? 'Доход' : 'Расход',
           'Категория': categories.find(c => c.id === t.category_id)?.name || 'Без категории',
+          'Название': (t as any).title || '',
           'Сумма': t.amount,
           'Валюта': t.currency,
           'Описание': t.description || ''
@@ -111,11 +116,16 @@ export const Analytics: React.FC = () => {
       
       // Auto-width columns
       const wscols = [
-          {wch: 12}, {wch: 10}, {wch: 20}, {wch: 15}, {wch: 10}, {wch: 30}
+          {wch: 12}, {wch: 8}, {wch: 10}, {wch: 20}, {wch: 20}, {wch: 15}, {wch: 10}, {wch: 30}
       ];
       ws['!cols'] = wscols;
 
-      XLSX.writeFile(wb, `fintrack_export_${startDate}_${endDate}.xlsx`);
+      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([wbout], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const fileName = `fintrack_export_${startDate}_${endDate}.xlsx`;
+
+      showModal(<ExportModal fileUrl={url} fileName={fileName} />);
   };
 
   return (
