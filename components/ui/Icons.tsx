@@ -7,7 +7,7 @@ import {
   Bell, Shield, Info, Download, Upload, CreditCard, Gift,
   Smartphone, Music, ShoppingBag,
   User, FileText, Star, MessageCircle, Navigation, RefreshCw, Camera, Check,
-  Image as ImageIcon
+  Image as ImageIcon, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle
 } from 'lucide-react';
 
 export const IconMap: Record<string, React.FC<any>> = {
@@ -55,7 +55,13 @@ export const IconMap: Record<string, React.FC<any>> = {
   'refresh-cw': RefreshCw,
   'camera': Camera,
   'check': Check,
-  'image': ImageIcon
+  'image': ImageIcon,
+  'mail': Mail,
+  'lock': Lock,
+  'eye': Eye,
+  'eye-off': EyeOff,
+  'alert-circle': AlertCircle,
+  'check-circle': CheckCircle
 };
 
 interface IconProps {
