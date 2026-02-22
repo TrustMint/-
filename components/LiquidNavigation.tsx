@@ -150,8 +150,12 @@ export const LiquidNavigation: React.FC<LiquidNavigationProps> = ({ onOpenAdd })
                         return (
                             <button
                                 key={tab.path}
-                                onClick={() => handleNavigate(tab.path)}
-                                className="nav-tab-btn flex-1 flex flex-col items-center justify-center h-full relative group z-10"
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleNavigate(tab.path);
+                                }}
+                                className="nav-tab-btn flex-1 flex flex-col items-center justify-center h-full relative group z-10 cursor-pointer"
                                 style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                             >
                                 {/* Icon Container */}
