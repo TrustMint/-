@@ -55,8 +55,26 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
         setFilters({ type: 'all', sortBy: 'date_desc', categoryId: null });
     };
 
+    const [poppingType, setPoppingType] = useState<string | null>(null);
+
+    const handleTypeChange = (id: string) => {
+        setFilters({ ...filters, type: id as any });
+        setPoppingType(id);
+        setTimeout(() => setPoppingType(null), 300);
+    };
+
     return (
         <div className="px-4 pt-2 pb-6 flex flex-col h-full">
+            <style>{`
+                @keyframes pop-150 {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.5); }
+                    100% { transform: scale(1); }
+                }
+                .animate-pop-150 {
+                    animation: pop-150 0.3s ease-in-out;
+                }
+            `}</style>
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <button onClick={handleReset} className="text-[15px] text-secondary/60 font-medium active:text-white transition-colors">Сбросить</button>
@@ -102,8 +120,8 @@ export const FilterTransactionModal: React.FC<FilterModalProps> = ({ categories,
                             {typeOptions.map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => setFilters({ ...filters, type: item.id as any })}
-                                    className={`flex-1 py-3 rounded-[20px] text-[13px] font-bold transition-colors duration-200 ${filters.type === item.id ? 'text-white' : 'text-secondary/60'}`}
+                                    onClick={() => handleTypeChange(item.id)}
+                                    className={`flex-1 py-3 rounded-[20px] text-[13px] font-bold transition-colors duration-200 ${filters.type === item.id ? 'text-white' : 'text-secondary/60'} ${poppingType === item.id ? 'animate-pop-150' : ''}`}
                                 >
                                     {item.label}
                                 </button>

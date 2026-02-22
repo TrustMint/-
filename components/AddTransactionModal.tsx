@@ -425,28 +425,6 @@ export const AddTransactionModal: React.FC = () => {
             </button>
           </div>
 
-          {/* Title */}
-          <div className="bg-black/20 rounded-[24px] px-5 py-4 border border-white/5">
-             <input 
-              type="text" 
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Название..."
-              className="w-full bg-transparent border-none text-white placeholder-white/20 focus:outline-none text-[15px] font-medium"
-            />
-          </div>
-
-          {/* Description */}
-          <div className="bg-black/20 rounded-[24px] px-5 py-4 border border-white/5">
-             <input 
-              type="text" 
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Комментарий..."
-              className="w-full bg-transparent border-none text-white placeholder-white/20 focus:outline-none text-[15px] font-medium"
-            />
-          </div>
-
           {/* Submit Button */}
           <div className="pt-4 pb-6">
             <button 

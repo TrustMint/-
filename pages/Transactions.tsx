@@ -198,7 +198,11 @@ export const Transactions: React.FC = () => {
       alert(`Редактирование: ${id}`);
   };
 
+  const [isPoppingFilter, setIsPoppingFilter] = useState(false);
+
   const openFilters = () => {
+      setIsPoppingFilter(true);
+      setTimeout(() => setIsPoppingFilter(false), 300);
       showModal(
           <FilterTransactionModal 
               categories={categories} 
@@ -212,6 +216,17 @@ export const Transactions: React.FC = () => {
 
   return (
     <div className="space-y-6 relative min-h-full">
+      <style>{`
+        @keyframes pop-150 {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        .animate-pop-150 {
+            animation: pop-150 0.3s ease-in-out;
+        }
+      `}</style>
+      
       {/* Header - Integrated into flow (not sticky) */}
       <div className="flex items-center gap-3 py-2 px-1">
         {/* Search Bar - Full Width */}
@@ -232,7 +247,7 @@ export const Transactions: React.FC = () => {
         {/* Filter Button */}
         <button
             onClick={openFilters}
-            className="pointer-events-auto rounded-full flex items-center justify-center text-white transition-transform relative active:scale-90 duration-200"
+            className={`pointer-events-auto rounded-full flex items-center justify-center text-white transition-transform relative duration-200 ${isPoppingFilter ? 'animate-pop-150' : 'active:scale-90'}`}
             style={{ 
                 width: 44,
                 height: 44,
