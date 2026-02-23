@@ -169,10 +169,10 @@ export const Analytics: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Period Filter - iOS Segmented Control Style */}
-      <div className="flex justify-center mb-2">
-        <div className="bg-[#1C1C1E] p-1 rounded-full flex relative w-full max-w-[320px]">
+      <div className="flex justify-center mb-4">
+        <div className="bg-[#1C1C1E] p-1 rounded-[12px] flex relative w-full max-w-[340px] shadow-sm">
             <div 
-                className="absolute top-1 bottom-1 bg-[#636366] rounded-full transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] shadow-sm"
+                className="absolute top-1 bottom-1 bg-[#636366] rounded-[10px] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] shadow-md"
                 style={{
                     width: 'calc(33.33% - 2.66px)',
                     transform: `translateX(${period === 'week' ? '0' : period === 'month' ? '100%' : '200%'})`,
@@ -183,7 +183,7 @@ export const Analytics: React.FC = () => {
                 <button 
                     key={p}
                     onClick={() => { setPeriod(p as any); triggerPeriodPop(p); }}
-                    className={`flex-1 py-1.5 text-[13px] font-semibold rounded-full relative z-10 transition-colors duration-200 ${period === p ? 'text-white' : 'text-secondary/60'} ${poppingPeriod === p ? 'animate-pop-150' : ''}`}
+                    className={`flex-1 py-1.5 text-[13px] font-semibold rounded-[10px] relative z-10 transition-colors duration-200 ${period === p ? 'text-white' : 'text-secondary/60'} ${poppingPeriod === p ? 'animate-pop-150' : ''}`}
                 >
                     {p === 'week' ? 'Неделя' : p === 'month' ? 'Месяц' : 'Год'}
                 </button>

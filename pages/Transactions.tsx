@@ -8,7 +8,7 @@ import { AddTransactionModal } from '../components/AddTransactionModal';
 import { useSinglePop } from '../hooks/usePopAnimation';
 
 // --- Компонент строки транзакции с поддержкой свайпа ---
-const SwipeableTransactionItem: React.FC<{
+export const SwipeableTransactionItem: React.FC<{
     t: Transaction;
     cat: Category | undefined;
     onDelete: (id: string) => void;
@@ -76,6 +76,11 @@ const SwipeableTransactionItem: React.FC<{
     };
 
     const timeString = new Date(t.date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    
+    // Calculate scale and opacity for swipe buttons based on offsetX
+    const swipeProgress = Math.min(1, Math.max(0, Math.abs(offsetX) / 130));
+    const buttonScale = 0.5 + (0.5 * swipeProgress);
+    const buttonOpacity = swipeProgress;
 
     return (
         <div className="relative mb-3 group" ref={itemRef}>
@@ -84,12 +89,14 @@ const SwipeableTransactionItem: React.FC<{
                 <button 
                     onClick={() => { triggerEditPop(); setIsAnimating(true); setOffsetX(0); onEdit(t.id); }}
                     className={`w-12 h-12 rounded-full bg-[#0A84FF] flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform ${isPoppingEdit ? 'animate-pop-150' : ''}`}
+                    style={{ transform: `scale(${buttonScale})`, opacity: buttonOpacity }}
                 >
                     <Icon name="file-text" size={20} />
                 </button>
                 <button 
                     onClick={() => { triggerDeletePop(); setIsAnimating(true); setOffsetX(0); onDelete(t.id); }}
                     className={`w-12 h-12 rounded-full bg-[#FF453A] flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform ${isPoppingDelete ? 'animate-pop-150' : ''}`}
+                    style={{ transform: `scale(${buttonScale})`, opacity: buttonOpacity }}
                 >
                     <Icon name="trash" size={20} />
                 </button>
@@ -120,14 +127,10 @@ const SwipeableTransactionItem: React.FC<{
                             <p className="font-semibold text-[15px] text-secondary leading-snug">{(t as any).title || cat?.name}</p>
                             <div className="flex items-center gap-1.5 mt-0.5">
                                 <span className="text-[12px] text-secondary/40 font-medium font-mono tracking-tight">{timeString}</span>
-                                {t.description && (
-                                    <>
-                                        <span className="text-[12px] text-secondary/30">•</span>
-                                        <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
-                                            {t.description}
-                                        </p>
-                                    </>
-                                )}
+                                <span className="text-[12px] text-secondary/30">•</span>
+                                <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
+                                    {(t as any).title ? (t.description ? `${cat?.name}, ${t.description}` : cat?.name) : (t.description || cat?.name)}
+                                </p>
                             </div>
                         </div>
                     </div>

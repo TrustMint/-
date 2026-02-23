@@ -3,10 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
 import { Icon } from '../components/ui/Icons';
 import { ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts';
+import { SwipeableTransactionItem } from './Transactions'; // We need to export this from Transactions.tsx
+import { AddTransactionModal } from '../components/AddTransactionModal';
+import { useModal } from '../components/ModalProvider';
 
 export const Dashboard: React.FC = () => {
-  const { transactions, categories, user, updateProfile } = useStore();
+  const { transactions, categories, user, updateProfile, deleteTransaction } = useStore();
   const navigate = useNavigate();
+  const { showModal } = useModal();
 
   // --- Monthly Limit Logic ---
   const limit = user?.monthly_limit || 50000;
@@ -54,6 +58,19 @@ export const Dashboard: React.FC = () => {
     date: new Date(t.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
   }));
 
+  const handleDelete = (id: string) => {
+    if(window.confirm('Удалить операцию?')) {
+        deleteTransaction(id);
+    }
+  };
+
+  const handleEdit = (id: string) => {
+      const transaction = transactions.find(t => t.id === id);
+      if (transaction) {
+          showModal(<AddTransactionModal transaction={transaction} />);
+      }
+  };
+
   return (
     <div className="space-y-3">
       {/* Header: Date Only - Integrated into flow */}
@@ -79,7 +96,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Income/Expense Row - Moved Out */}
       <div className="grid grid-cols-2 gap-3 mt-2 relative z-10">
-        <div className="bg-[#1C1C1E] rounded-[24px] p-4 flex items-center gap-3 border border-white/5">
+        <div className="bg-[#1C1C1E] rounded-[24px] p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#30D158]/10 flex items-center justify-center text-[#30D158] shrink-0">
                 <Icon name="trending-down" size={20} className="rotate-180" />
             </div>
@@ -88,7 +105,7 @@ export const Dashboard: React.FC = () => {
                 <p className="text-[13px] font-bold text-secondary truncate">+{income.toLocaleString('ru-RU')}</p>
             </div>
         </div>
-        <div className="bg-[#1C1C1E] rounded-[24px] p-4 flex items-center gap-3 border border-white/5">
+        <div className="bg-[#1C1C1E] rounded-[24px] p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#FF453A]/10 flex items-center justify-center text-[#FF453A] shrink-0">
                 <Icon name="trending-down" size={20} />
             </div>
@@ -172,30 +189,13 @@ export const Dashboard: React.FC = () => {
             transactions.slice(0, 5).map(t => {
                 const cat = categories.find(c => c.id === t.category_id) || categories[0];
                 return (
-                    <div 
+                    <SwipeableTransactionItem 
                         key={t.id} 
-                        // Optional: Navigate to transactions or show details
-                        onClick={() => navigate('/transactions', { replace: true })}
-                        className="bg-[#1C1C1E] rounded-[24px] p-4 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="w-[42px] h-[42px] rounded-[14px] flex items-center justify-center shrink-0 relative overflow-hidden bg-[#171717] border border-white/5">
-                                 <div className="absolute inset-0 rounded-[14px] pointer-events-none z-10 shadow-[inset_1px_1px_0_0_rgba(255,255,255,0.08)]"></div>
-                                <Icon name={cat?.icon || 'dollar'} size={20} color={cat?.color} />
-                            </div>
-                            <div>
-                                <p className="font-semibold text-[15px] text-white leading-snug">{(t as any).title || cat?.name}</p>
-                                {t.description && (
-                                    <p className="text-[13px] text-secondary/50 font-medium truncate max-w-[140px]">
-                                        {t.description}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                        <div className={`font-bold text-[16px] tracking-tight ${t.type === 'income' ? 'text-[#30D158]' : 'text-[#FF453A]'}`}>
-                            {t.type === 'income' ? '+' : '−'}{Math.abs(t.amount).toLocaleString('ru-RU')} ₽
-                        </div>
-                    </div>
+                        t={t} 
+                        cat={cat} 
+                        onDelete={handleDelete}
+                        onEdit={handleEdit}
+                    />
                 );
             })
         )}
